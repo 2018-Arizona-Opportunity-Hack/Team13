@@ -1,4 +1,4 @@
-package com.hackathon.app;
+package com.hackathon.inventoryserver;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class AppApplicationTests {
+public class InventoryserverApplicationTests {
 
 	@Test
 	public void contextLoads() {
