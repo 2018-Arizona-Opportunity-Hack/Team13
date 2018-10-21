@@ -57,6 +57,8 @@ public class ExtractCSV {
 					Donation don = new Donation();
 					List<Donation> donorList = null;
 					setMembers(don, donationDetails,columnMapping, mapIndex);
+					
+					don.setDollarValue(Double.toString(Double.parseDouble(don.getWeight())*1.67));
 					if (mapInit.containsKey(don.getDonorId())) {
 
 						don.setCategory(mapInit.get(don.getDonorId()));
@@ -119,6 +121,7 @@ public class ExtractCSV {
 			if (mapIndex.containsKey(map.getKey()))
 				BeanUtils.setProperty(donation, map.getValue(), donationDetails[mapIndex.get(map.getKey())]);
 		}
+		
 	}
 
 	public static void mapFields(Map<String, String> columnMapping) {
