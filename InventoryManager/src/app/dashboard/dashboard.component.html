@@ -6,7 +6,7 @@
   </mat-form-field>
 </div>
 <div class="row">
-  <div class="col-lg-6 text-center chart1">
+  <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 text-center chart1">
     <canvas baseChart
           [data]="pieChartData"
           [labels]="pieChartLabels"
@@ -17,8 +17,8 @@
     </canvas>
   </div>   
 
-  <div class="col-lg-6 chart2">
-    <canvas baseChart
+  <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 chart2">
+    <canvas baseChart 
           [data]="pieChartDollarData"
           [labels]="pieChartLabels"
           [chartType]="pieChartType"
@@ -28,7 +28,7 @@
     </canvas>
   </div>  
   </div> 
- <div class="col-md-12 chart3" *ngIf="chartData[0].data.length>0">
+ <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 chart3" *ngIf="chartData[0].data.length>0">
     <div style="display: block;">
   <canvas baseChart width="20300"
    [chartType]="'line'"
