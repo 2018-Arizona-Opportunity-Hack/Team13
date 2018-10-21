@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -30,6 +34,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -99,7 +106,9 @@ public class ApplicationController {
     */
 	
 	@GetMapping("/export/{year}")
-	public void exportExcel(@PathVariable("year") String year) {
+	public ResponseEntity exportExcel(@PathVariable("year") String year, HttpServletRequest request, HttpServletResponse response) {
+		response.setContentType("application/csv");
+		response.setHeader("Content-Disposition", "attachment; filename=" + "Insights_"+year+".xlsx");
 		String[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 		Workbook workbook = new XSSFWorkbook();
 		List<String> totCol = new ArrayList<>();
@@ -221,9 +230,27 @@ public class ApplicationController {
 			e.printStackTrace();
 		}
 
-		// return new Response(200, "success");
+		return getDownloadResponse("./Insights.xlsx");
 	}
 
+	
+	public static ResponseEntity getDownloadResponse(String folderPath) {
+	    File file2Upload = new File(folderPath);
+	    Path path = Paths.get(folderPath);
+	    ByteArrayResource resource = null;
+	    try {
+	        resource = new ByteArrayResource(Files.readAllBytes(path));
+	    } catch (IOException e) {
+	    	e.printStackTrace();
+	    }
+
+	    return ResponseEntity.ok()
+	            .contentLength(file2Upload.length())
+	            /*.contentType("application/csv")*/
+	            .body(resource);
+	}
+	
+	
 	@GetMapping("/category")
 	public CategoryResponse getCategoryList() {
 		CategoryResponse response = new CategoryResponse(200, "success");
