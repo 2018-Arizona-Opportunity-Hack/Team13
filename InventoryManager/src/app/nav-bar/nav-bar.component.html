@@ -1,21 +1,21 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-          <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 bg-inverse">
-            <a class="navbar-brand" href="#">InventoryManager</a>
-              <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-             </button> -->
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto flex-row">
-        <li class="nav-item">
-            <a routerLink="/dashboard" class="nav-link">Dashboard</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Signup</a>
-          </li>
-      </ul>
-    </div>
+<nav class="navbar navbar-expand-md navbar-dark bg-primary mr-auto fixed-top">
+    <a class="navbar-brand">Inventory Manager</a>
+    <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed" data-target="#navbarsDefault" aria-controls="navbarsDefault" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto flex-row">
+            <li class="nav-item">
+                <a routerLink="/dashboard" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Upload File</a>
+              </li>
+          </ul>
+        </div>
   </nav>
   </div>
 </div>

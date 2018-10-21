@@ -6,17 +6,20 @@ import { AppComponent } from './app.component';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { from } from 'rxjs';
+import { UpdateDBComponent } from './update-db/update-db.component';
 
 const routes: Routes = [
   { path: 'nav-bar', component: NavBarComponent },
-  { path: 'dashboard', component: DashboardComponent }
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'updateDB', component: UpdateDBComponent }
 ];
 
 @NgModule({
   declarations: [
     AppComponent,
     NavBarComponent,
-    DashboardComponent
+    DashboardComponent,
+    UpdateDBComponent
   ],
   imports: [
     BrowserModule,
