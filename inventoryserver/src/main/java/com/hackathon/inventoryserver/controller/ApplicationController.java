@@ -229,7 +229,7 @@ public class ApplicationController {
 		CategoryResponse response = new CategoryResponse(200, "success");
 		Map<String, String> map= CategorySingleton.getInstance();
 		Set<String> categoryList = new HashSet<>(); 
-		for(String val : map.keySet()) {
+		for(String val : map.values()) {
 			categoryList.add(val);
 		}
 		response.addCategoryList(categoryList);
