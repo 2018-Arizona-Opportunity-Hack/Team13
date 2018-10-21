@@ -37,7 +37,7 @@ constructor(private _appservice: AppService){}
     data["aggregate"].forEach(element => {
           this.pieChartData.push(element.totalPounds);
           this.pieChartLabels.push(element.category);
-          this.pieChartDollarData.push(2); // to be changed to element.dollarValue
+          this.pieChartDollarData.push(element.totalDollarVal); // to be changed to element.dollarValue
       });
     
   });
@@ -87,6 +87,7 @@ public pieChartLabels:string[] = [];
 public pieChartData:number[] = [];
 public pieChartDollarData:number[]=[];
 public pieChartType:string = 'pie';
+public barChartType:string='bar';
 
 
 // events on slice click
@@ -135,7 +136,7 @@ addEvent(type: string, event: MatDatepickerInputEvent<Date>) {
     data["aggregate"].forEach(element => {
       this.pieChartData.push(element.totalPounds);
       this.pieChartLabels.push(element.category);
-      this.pieChartDollarData.push(2); // to be changed to element.dollarValue
+      this.pieChartDollarData.push(element.totalDollarVal); // to be changed to element.dollarValue
     });
   });
   }
