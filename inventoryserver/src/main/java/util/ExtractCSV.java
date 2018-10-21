@@ -72,6 +72,7 @@ public class ExtractCSV {
 							donorList.add(don);
 							mapDonors.put(don.getCategory(), donorList);
 							
+							
 						}
 					}
 					else
@@ -79,6 +80,8 @@ public class ExtractCSV {
 					donationList.add(don);
 				}
 			}
+			
+			createFiles(donationList, year, month);
 			
 			
 			
@@ -128,13 +131,13 @@ public class ExtractCSV {
 
 	}
 	
-	  static CSVReader csvReader; public static void main(String[] args) throws
+  static CSVReader csvReader; public static void main(String[] args) throws
 	  IOException {
 		  Reader reader = Files.newBufferedReader(Paths.get("C:\\Users\\kumar\\Downloads\\donors.csv"));
 			CSVReader csvReader = new CSVReader(reader);
 			readCSVFile(csvReader, "2019", "Aug");
 		  
-	  createFiles(null, "2019", "Jan");
+//	  createFiles(null, "2019", "Jan");
 	 }
 	 
 	
@@ -143,7 +146,7 @@ public class ExtractCSV {
 	{
 		//StringBuffer sbPath = new StringBuffer("D:\\Files");
 		StringBuffer sbPath = new StringBuffer(Constant.DATA_FOLDER);
-		sbPath.append("\\").append(year);
+		sbPath.append("/").append(year);
 		String categoryName = null;
 		File file = new File(sbPath.toString());
 		if(!file.exists())
@@ -161,7 +164,7 @@ public class ExtractCSV {
 		if(!file.exists())
 		{
 			if (file.mkdir()) {
-                System.out.println("Directory is created!");
+         //       System.out.println("Directory is created!");
             } else {
                 System.out.println("Failed to create directory!");
             }
@@ -182,8 +185,8 @@ public class ExtractCSV {
 			file = new File(sbPath.toString());
 			try (FileWriter fileWrite = new FileWriter(sbPath.toString())) {
 				fileWrite.write(jsonCategory);
-				System.out.println("Successfully Copied JSON Object to File...");
-				System.out.println("\nJSON Object: " + jsonCategory);
+				//System.out.println("Successfully Copied JSON Object to File...");
+				//System.out.println("\nJSON Object: " + jsonCategory);
 			}
 			sbPath.delete(sbPath.length()-length-jsonLength-1, sbPath.length());
 		}

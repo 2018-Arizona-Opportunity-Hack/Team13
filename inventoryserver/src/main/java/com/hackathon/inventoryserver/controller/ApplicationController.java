@@ -70,7 +70,7 @@ public class ApplicationController {
 			@RequestParam("categoryList") List<String> categoryList) {
 		Set<String> cList = new HashSet<>(categoryList);
 		StringBuilder folder = new StringBuilder();
-		folder.append(util.Constant.DATA_FOLER).append(year).append("/").append(month);
+		folder.append(util.Constant.DATA_FOLDER).append(year).append("/").append(month);
 		File f = new File(folder.toString());
 		List<CategoryAggregate> resultList = new ArrayList<CategoryAggregate>();
 		if (f.exists() && f.isDirectory()) {
