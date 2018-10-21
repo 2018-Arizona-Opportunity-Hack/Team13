@@ -1,22 +1,11 @@
 package models;
 
-import java.util.Date;
-
 public class Donation {
 
 	private String organization;
 	private String firstName;
 	private String middleName;
 	private String lastName;
-
-	public String getDonorId() {
-		return donorId;
-	}
-
-	public void setDonorId(String donorId) {
-		this.donorId = donorId;
-	}
-
 	private String email;
 	private String spouseName;
 	private String salutationGreeting;
@@ -74,6 +63,26 @@ public class Donation {
 		this.value = value;
 		this.dollarValue = dollarValue;
 		this.memo = memo;
+	}
+	
+	public String getDonorId() {
+		return donorId;
+	}
+
+	public void setDonorId(String donorId) {
+		this.donorId = donorId;
+	}
+
+	@Override
+	public String toString() {
+		return "Donation [organization=" + organization + ", firstName=" + firstName + ", middleName=" + middleName
+				+ ", lastName=" + lastName + ", email=" + email + ", spouseName=" + spouseName + ", salutationGreeting="
+				+ salutationGreeting + ", streetAddress=" + streetAddress + ", apartment=" + apartment + ", city="
+				+ city + ", state=" + state + ", zipCode=" + zipCode + ", donorType=" + donorType + ", donationType="
+				+ donationType + ", donationSource=" + donationSource + ", donationDate=" + donationDate
+				+ ", foodItemCategory=" + foodItemCategory + ", foodItemName=" + foodItemName + ", quantity=" + quantity
+				+ ", quantityType=" + quantityType + ", weight=" + weight + ", value=" + value + ", dollarValue="
+				+ dollarValue + ", memo=" + memo + ", donorId=" + donorId + ", isCompany=" + isCompany + "]";
 	}
 
 	public String getCategory() {
