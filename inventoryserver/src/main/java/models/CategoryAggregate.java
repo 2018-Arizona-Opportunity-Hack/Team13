@@ -4,16 +4,16 @@ import org.apache.commons.lang3.StringUtils;
 
 public class CategoryAggregate {
 	private String category;
-	private Integer totalPounds;
-	private Integer totalDollarVal;
+	private Double totalPounds;
+	private Double totalDollarVal;
 
 	public void addUp(String category, String totalPounds, String totalDollarVal) {
 		this.category = category;
-		this.totalDollarVal += (StringUtils.isBlank(totalDollarVal) ? 0 : Integer.valueOf(totalDollarVal));
-		this.totalPounds += (StringUtils.isBlank(totalPounds) ? 0 : Integer.valueOf(totalPounds));
+		this.totalDollarVal += (StringUtils.isBlank(totalDollarVal) ? 0 : Double.valueOf(totalDollarVal));
+		this.totalPounds += (StringUtils.isBlank(totalPounds) ? 0 : Double.valueOf(totalPounds));
 	}
 
-	public CategoryAggregate(String category, Integer totalPounds, Integer totalDollarVal) {
+	public CategoryAggregate(String category, Double totalPounds, Double totalDollarVal) {
 		super();
 		this.category = category;
 		this.totalPounds = totalPounds;
@@ -21,8 +21,8 @@ public class CategoryAggregate {
 	}
 
 	public CategoryAggregate() {
-		totalPounds = 0;
-		totalDollarVal = 0;
+		totalPounds = 0.0;
+		totalDollarVal = 0.0;
 	}
 
 	@Override
@@ -39,19 +39,19 @@ public class CategoryAggregate {
 		this.category = category;
 	}
 
-	public Integer getTotalPounds() {
+	public Double getTotalPounds() {
 		return totalPounds;
 	}
 
-	public void setTotalPounds(Integer totalPounds) {
+	public void setTotalPounds(Double totalPounds) {
 		this.totalPounds = totalPounds;
 	}
 
-	public Integer getTotalDollarVal() {
+	public Double getTotalDollarVal() {
 		return totalDollarVal;
 	}
 
-	public void setTotalDollarVal(Integer totalDollarVal) {
+	public void setTotalDollarVal(Double totalDollarVal) {
 		this.totalDollarVal = totalDollarVal;
 	}
 

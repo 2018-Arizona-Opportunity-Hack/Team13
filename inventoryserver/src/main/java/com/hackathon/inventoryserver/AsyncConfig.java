@@ -31,7 +31,7 @@ public class AsyncConfig {
 	}
 
 	@Bean
-	public AggregationService aggregationService() {
+	public static AggregationService aggregationService() {
 		return new AggregationServiceImpl();
 	}
 

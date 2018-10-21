@@ -1,27 +1,21 @@
 package com.hackathon.inventoryserver.controller;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.websocket.server.PathParam;
-
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +31,6 @@ import com.opencsv.CSVReader;
 
 import models.AggregateResponse;
 import models.CategoryAggregate;
-import models.Donation;
 import models.MonthlyAggregateResponse;
 import models.Response;
 import models.YearlyResponse;
@@ -53,10 +46,9 @@ public class ApplicationController {
 	@Autowired
 	private AggregationService aggregationService;
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@PostMapping("/csv/{year}/{month}")
-	public Response uploadFile(@RequestParam("file") MultipartFile file, @PathParam("month") String month,
-			@PathParam("year") String year) {
+	public Response uploadFile(@RequestParam("file") MultipartFile file, @PathVariable("month") String month,
+			@PathVariable("year") String year) {
 
 		String fileName = fileStorageService.storeFile(file);
 		System.out.println(fileName + "::" + month + "::" + year);
@@ -75,13 +67,13 @@ public class ApplicationController {
 	}
 
 	@GetMapping("/csv/{year}/{month}")
-	public Response exportCsv(@RequestParam("file") MultipartFile file, @PathParam("month") String month,
-			@PathParam("year") String year) {
+	public Response exportCsv(@RequestParam("file") MultipartFile file, @PathVariable("month") String month,
+			@PathVariable("year") String year) {
 		return new Response(200, "success");
 	}
 
 	@GetMapping("/data/{year}")
-	public Response aggregateYearlyData(@PathParam("year") String year,
+	public Response aggregateYearlyData(@PathVariable("year") String year,
 			@RequestParam("categoryList") List<String> categoryList) {
 		YearlyResponse response = new YearlyResponse(200, "success");
 		List<MonthlyAggregateResponse> resultList = new ArrayList<MonthlyAggregateResponse>();
@@ -121,63 +113,31 @@ public class ApplicationController {
 	}
 
 	@GetMapping("/data/{year}/{month}")
-	public Response aggregateMonthlyData(@PathParam("month") String month, @PathParam("year") String year,
-			@RequestParam("categoryList") List<String> categoryList) {
-		Set<String> cList = new HashSet<>(categoryList);
-		StringBuilder folder = new StringBuilder();
-		folder.append(util.Constant.DATA_FOLDER).append(year).append("/").append(month);
-		File f = new File(folder.toString());
+	public Response aggregateMonthlyData(@PathVariable("month") String month, @PathVariable("year") String year,
+			@RequestParam(value = "categoryList", required = false) List<String> categoryList) {
+		Set<String> cList;
+		if (null!=categoryList) {
+			cList = new HashSet<>(categoryList);
+		}
+		StringBuilder path = new StringBuilder();
+		path.append(util.Constant.DATA_FOLDER).append(year).append("/").append(month).append("/aggregate.json");
+		File f = new File(path.toString());
 
 		List<CategoryAggregate> resultList = new ArrayList<CategoryAggregate>();
-		if (f.exists() && f.isDirectory()) {
+		if (f.exists()) {
 			try {
 				if (null == categoryList || CollectionUtils.isEmpty(categoryList)) {
-					File[] listOfFiles = f.listFiles();
-
-					for (File singleFile : listOfFiles) {
-						if (!singleFile.getName().equals("aggregation.json")) {
-
-							ObjectMapper mapper = new ObjectMapper();
-							JsonFactory factory = new JsonFactory();
-							List<Donation> donationList = null;
-							JsonParser jp = factory.createJsonParser(singleFile);
-							TypeReference<List<Donation>> tRef = new TypeReference<List<Donation>>() {
-							};
-							donationList = mapper.readValue(jp, tRef);
-							CategoryAggregate row = new CategoryAggregate();
-							for (Donation donation : donationList) {
-								row.addUp(singleFile.getName(), donation.getWeight(), donation.getDollarValue());
-							}
-							System.out.println(row);
-							resultList.add(row);
-
-						}
-					}
-				} else {
-					File[] listOfFiles = f.listFiles();
-					for (File singleFile : listOfFiles) {
-						if (cList.contains(singleFile.getName()) && !singleFile.getName().equals("aggregation.json")) {
-							ObjectMapper mapper = new ObjectMapper();
-							JsonFactory factory = new JsonFactory();
-							List<Donation> donationList = null;
-							JsonParser jp = factory.createJsonParser(singleFile);
-							TypeReference<List<Donation>> tRef = new TypeReference<List<Donation>>() {
-							};
-							donationList = mapper.readValue(jp, tRef);
-							CategoryAggregate row = new CategoryAggregate();
-							for (Donation donation : donationList) {
-								row.addUp(singleFile.getName(), donation.getWeight(), donation.getDollarValue());
-							}
-							System.out.println(row);
-							resultList.add(row);
-						}
-
-					}
-
+					ObjectMapper mapper = new ObjectMapper();
+					JsonFactory factory = new JsonFactory();
+					List<CategoryAggregate> categoryAggregateList = null;
+					JsonParser jp = factory.createJsonParser(f);
+					TypeReference<List<CategoryAggregate>> tRef = new TypeReference<List<CategoryAggregate>>() {
+					};
+					categoryAggregateList = mapper.readValue(jp, tRef);
+					resultList.addAll(categoryAggregateList);
 				}
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

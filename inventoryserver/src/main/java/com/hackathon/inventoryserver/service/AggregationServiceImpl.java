@@ -20,7 +20,7 @@ public class AggregationServiceImpl implements AggregationService {
 
 	@Async("processExecutor")
 	@Override
-	public void aggregateMonthlyData(Map<String, List<Donation>> map, String month, String year) {
+	public void aggregateMonthlyData(Map<String, List<Donation>> map, String year, String month) {
 		try {
 			System.out.println("Entering the async method to calculate the category wise aggregate per month ");
 			StringBuilder path = new StringBuilder();
@@ -36,6 +36,10 @@ public class AggregationServiceImpl implements AggregationService {
 			}
 
 			try {
+				File file = new File(path.toString());
+				if (!file.exists()) {
+					file.createNewFile();
+				}
 				mapper.writeValue(new File(path.toString()), result);
 			} catch (IOException e) {
 				e.printStackTrace();

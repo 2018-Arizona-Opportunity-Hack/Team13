@@ -17,14 +17,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.hackathon.inventoryserver.service.AggregationService;
+import com.hackathon.inventoryserver.service.AggregationServiceImpl;
 import com.opencsv.CSVReader;
 
 import models.Donation;
-
+@Component
 public class ExtractCSV {
 
 	static Map<String, String> mapInit = CategorySingleton.getInstance();
@@ -32,8 +33,8 @@ public class ExtractCSV {
 	static Map<String, String> columnMapping = new HashMap<String, String>();
 	static Set<String> newDonors = new HashSet<>();
 	static Map<String, List<Donation>> mapDonors = new HashMap<>();
-	@Autowired
-	private static AggregationService aggregationService;
+	
+	private static AggregationService aggregationService = new AggregationServiceImpl();
 
 	public static void readCSVFile(CSVReader csvReader, String year, String month) {
 

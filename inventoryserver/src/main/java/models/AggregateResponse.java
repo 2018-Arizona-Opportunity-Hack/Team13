@@ -1,26 +1,30 @@
 package models;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AggregateResponse extends Response {
 
 	public AggregateResponse(int code, String msg, List<CategoryAggregate> aggregate) {
 		super(code, msg);
+		this.aggregate.addAll(aggregate);
 	}
 
 	private static final long serialVersionUID = -7544705489718563388L;
 
 	//map of month, list of aggregates based on category
-	private  Map<String, List<CategoryAggregate>> aggregate ;
+	private  List<CategoryAggregate> aggregate = new ArrayList<>() ;
+
+	public List<CategoryAggregate> getAggregate() {
+		return aggregate;
+	}
+
+	public void setAggregate(List<CategoryAggregate> aggregate) {
+		this.aggregate = aggregate;
+	}
 
 
-	public static void main(String...args) throws JsonProcessingException {
+	/*public static void main(String...args) throws JsonProcessingException {
 		
 		List<CategoryAggregate> list = new ArrayList<>();
 		list.add(new CategoryAggregate("Grocerry", 10, 12));
@@ -37,17 +41,10 @@ public class AggregateResponse extends Response {
 		ObjectMapper mapper = new ObjectMapper();
 		System.out.println(mapper.writeValueAsString(map));
 			
-	}
+	}*/
 
 
-	public Map<String, List<CategoryAggregate>> getAggregate() {
-		return aggregate;
-	}
 
-
-	public void setAggregate(Map<String, List<CategoryAggregate>> aggregate) {
-		this.aggregate = aggregate;
-	}
 	
 	
 }
