@@ -45,5 +45,9 @@ export class AppService {
       map(this.extractData)
     );
   }
+
+  postCategories(data:any, month:string,year:string){
+    this.http.post(this.endpoint+'data/missingCategory/'+year+'/'+month,data);
+  }
 }
 

@@ -23,33 +23,37 @@
     <div class="row voffset3">
         <div class="col-lg-12">
         <div>Enter Year<input [(ngModel)]="year"/></div>
-            <p>
+            <p><br>
     <button mat-raised-button (click)="downloadCSV()">Download Aggregarated report</button>
-    </p>
+        </p>
   </div>
 </div>
 <div>
-<mat-table #table [dataSource]="dataSource">
+<mat-table #table [dataSource]="dataSource" *ngIf="shouldShowCategoryAddView">
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row> 
+    
+        <!-- Id Column -->
+     <ng-container matColumnDef="donorId">
+            <mat-header-cell *matHeaderCellDef> Donor Id </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.donorId}} </mat-cell>
+          </ng-container>
+     <!-- organization Column -->
+     <ng-container matColumnDef="organization">
+            <mat-header-cell *matHeaderCellDef> Organization </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.organization}} </mat-cell>
+          </ng-container>
+
     <!-- Position Column -->
-    <ng-container matColumnDef="position">
-      <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+    <ng-container matColumnDef="category">
+      <mat-header-cell *matHeaderCellDef> Category </mat-header-cell>
       <mat-cell *matCellDef="let element"> 
-       <mat-select placeholder="My Options">
-          <mat-option [value]="opt-1"> Option 1 </mat-option>
-          <mat-option [value]="opt-2"> Option 2 </mat-option>
-          <mat-option [value]="opt-3"> Option 3 </mat-option>
+       <mat-select placeholder="Categories" [(ngModel)]="element.category">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let category of categories" [value]="category">{{month}}</mat-option>
         </mat-select>
       </mat-cell>
     </ng-container>
-
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
-    </ng-container>
-    
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row> 
 </mat-table>
-<input type="submit">
+<button mat-raised-button (click)="onCategorySubmit()" *ngIf="shouldShowCategoryAddView">Submit Categories</button>
 </div>

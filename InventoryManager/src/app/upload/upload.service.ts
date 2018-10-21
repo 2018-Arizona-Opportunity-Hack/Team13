@@ -40,6 +40,7 @@ export class UploadService {
 
           // Close the progress-stream if we get an answer form the API
           // The upload is complete
+          localStorage.setItem('unknownCategory', JSON.stringify(event.body));
           progress.complete();
         }
       });
