@@ -1,7 +1,31 @@
 <input type="file" #file style="display: none" (change)="onFilesAdded()" multiple />
 <div class="container" fxLayout="column" fxLayoutAlign="space-evenly stretch">
   <h1 mat-dialog-title>Upload Files</h1>
+  <p>*Please select the year and the month of the files you are going to upload</p>
+    
+    <div fxLayout="row" fxLayoutAlign="start center">
+        <mat-form-field fxFlex="20%">
+          <mat-select placeholder="Select Year" [(ngModel)]="year">
+              <mat-option>None</mat-option>
+              <mat-option *ngFor="let year of years" [value]="year">{{year}}</mat-option>
+           </mat-select>
+          </mat-form-field>
+       <!-- </div> -->
+    <!-- <div flex> -->
+        <div fxFlex="10%">
+        </div>
+
+  <mat-form-field fxFlex="20%">
+    <mat-select placeholder="Select Month" [(ngModel)]="month">
+       <mat-option>None</mat-option>
+       <mat-option *ngFor="let month of months" [value]="month">{{month}}</mat-option>
+  </mat-select>
+</mat-form-field>
+    </div>
+  <!-- </div> -->
   
+
+
   <div>
     <button [disabled]="uploading || uploadSuccessful" mat-raised-button color="primary" class="add-files-btn" (click)="addFiles()">
       Add Files

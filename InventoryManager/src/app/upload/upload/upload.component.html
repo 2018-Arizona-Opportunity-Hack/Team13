@@ -1,4 +1,7 @@
 <div class="mx-auto" style="width: 200px;">
+    <div class="row voffset4">
+            <img src="assets/img/csvFile_ic.png">
+    </div>
     <div class="row voffset5">
         <div class="col-lg-12" style="text-align:center;padding-right: 0px;padding-top:3.5em;padding-bottom: .5em;">
             <p>
@@ -15,4 +18,38 @@
     </p>
   </div>
 </div>
+
+<div class="mx-auto" style="width: 200px;">
+    <div class="row voffset3">
+        <div class="col-lg-12">
+        <div>Enter Year<input [(ngModel)]="year"/></div>
+            <p>
+    <button mat-raised-button (click)="downloadCSV()">Download Aggregarated report</button>
+    </p>
+  </div>
+</div>
+<div>
+<mat-table #table [dataSource]="dataSource">
+    <!-- Position Column -->
+    <ng-container matColumnDef="position">
+      <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+      <mat-cell *matCellDef="let element"> 
+       <mat-select placeholder="My Options">
+          <mat-option [value]="opt-1"> Option 1 </mat-option>
+          <mat-option [value]="opt-2"> Option 2 </mat-option>
+          <mat-option [value]="opt-3"> Option 3 </mat-option>
+        </mat-select>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+    </ng-container>
+    
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row> 
+</mat-table>
+<input type="submit">
 </div>

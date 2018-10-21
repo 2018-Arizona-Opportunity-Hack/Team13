@@ -7,13 +7,13 @@ CSS
 .voffset3 { margin-top: 15px; 
     text-align:center;
     padding-right: 0px;
-    padding-top:0.5em;
-    padding-bottom: .5em;
-}.voffset4 { margin-top: 30px; }
-.voffset5 { margin-top: 40px; 
+
+}.voffset4 { margin-top: 30px; 
+    padding-left: 1.5em;}
+.voffset5 { margin-top: 10px; 
     text-align:center;
     padding-right: 0px;
-    padding-top:3.5em;
+    padding: top 0em;
     padding-bottom: .5em;
 }
 .voffset6 { margin-top: 60px; }

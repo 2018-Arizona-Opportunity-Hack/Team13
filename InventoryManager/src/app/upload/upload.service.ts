@@ -3,16 +3,16 @@ import { HttpClient, HttpRequest, HttpEventType, HttpResponse } from '@angular/c
 import { Subject } from 'rxjs';
 import { Observable } from 'rxjs';
 
-const url = 'http://18.237.252.206:8080/csv/Sep';
+const baseUrl = 'http://18.237.252.206:8080/csv/';
 
 @Injectable()
 export class UploadService {
   constructor(private http: HttpClient) {}
 
-  public upload(files: Set<File>): {[key:string]:Observable<number>} {
+  public upload(files: Set<File>, year: string, month:string): {[key:string]:Observable<number>} {
     // this will be the our resulting map
     const status = {};
-
+    const url = baseUrl + year + '/' + month;
     files.forEach(file => {
       // create a new multipart-form for every file
       const formData: FormData = new FormData();
@@ -52,5 +52,8 @@ export class UploadService {
 
     // return the map of progress.observables
     return status;
+  }
+  public export(year:number){
+    window.location.href='http://18.237.252.206:8080/export/'+year;
   }
 }

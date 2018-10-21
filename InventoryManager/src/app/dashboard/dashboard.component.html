@@ -1,3 +1,42 @@
-<p>
-  dashboard works!
-</p>
+<div class="main-header-dropdown">
+  <mat-form-field>
+    <input matInput [matDatepicker]="dp3" disabled [(ngModel)]="planModel.start_time" (dateChange)="addEvent('change', $event)">
+    <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+    <mat-datepicker #dp3 disabled="false"></mat-datepicker>
+  </mat-form-field>
+</div>
+<div class="row">
+  <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 text-center chart1">
+    <canvas baseChart
+          [data]="pieChartData"
+          [labels]="pieChartLabels"
+          [chartType]="pieChartType"
+          [colors]="pieChartColors"
+          (chartHover)="chartHovered($event)"
+          (chartClick)="chartClicked($event)">
+    </canvas>
+  </div>   
+
+  <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 chart2">
+    <canvas baseChart 
+          [data]="pieChartDollarData"
+          [labels]="pieChartLabels"
+          [chartType]="pieChartType"
+          [colors]="pieChartColors"
+          (chartHover)="chartHovered($event)"
+          (chartClick)="chartClicked($event)">
+    </canvas>
+  </div>  
+  </div> 
+ <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 chart3" *ngIf="chartData[0].data.length>0">
+    <div style="display: block;">
+  <canvas baseChart width="20300"
+   [chartType]="'line'"
+      [datasets]="chartData"
+      [labels]="chartLabels"
+      [options]="chartOptions"
+      [legend]="true"
+      (chartClick)="onChartClick($event)"
+  ></canvas>
+   </div>
+  </div>
