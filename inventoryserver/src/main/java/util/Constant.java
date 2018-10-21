@@ -1,6 +1,10 @@
 package util;
 
-public interface Constant {
-	public static final String DATA_FOLER = "./data/";
+
+public class Constant {
+
+	public static final String DATA_FOLDER = "./data/";
+	
+
 
 }
