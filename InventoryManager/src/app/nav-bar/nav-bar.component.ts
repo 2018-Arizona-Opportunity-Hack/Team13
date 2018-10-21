@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav-bar',
@@ -8,10 +9,16 @@ import { MenuItem } from 'primeng/api';
 })
 export class NavBarComponent implements OnInit {
 
-  constructor() { }
+  isNavbarCollapsed=true;
+
+  constructor(private router: Router) { }
 
   ngOnInit() {
+    this.dashBoardTapped();
   }
 
-  isNavbarCollapsed=true;
+  dashBoardTapped(){
+    this.router.navigateByUrl('/dashboard');
+  }
+
 }
