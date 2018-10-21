@@ -2,3 +2,13 @@
     font-size: 26px;
     color: White;
 }
+
+.container-fluid {
+    padding: 0px;
+    }
+    
+ .navbar {
+    width: inherit;
+    left: 50%;
+    transform: translateX(-50%);
+    }
