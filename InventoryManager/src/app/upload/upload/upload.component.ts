@@ -5,7 +5,7 @@ import { UploadService } from '../upload.service';
 
 @Component({
   selector: 'app-upload',
-  templateUrl: './upload/upload.component.html',
+  templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.css']
 })
 export class UploadComponent {
@@ -14,4 +14,5 @@ export class UploadComponent {
   public openUploadDialog() {
     let dialogRef = this.dialog.open(DialogComponent, { width: '50%', height: '50%' });
   }
+
 }

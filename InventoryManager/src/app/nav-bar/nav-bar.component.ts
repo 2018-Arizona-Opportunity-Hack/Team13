@@ -9,8 +9,12 @@ import { Router } from '@angular/router';
 })
 export class NavBarComponent implements OnInit {
 
-  isNavbarCollapsed=true;
+  navbarOpen = false;
 
+  toggleNavbar() {
+    this.navbarOpen = !this.navbarOpen;
+  }
+  
   constructor(private router: Router) { }
 
   ngOnInit() {
