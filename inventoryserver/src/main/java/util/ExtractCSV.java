@@ -73,7 +73,7 @@ public class ExtractCSV {
 
 						}
 					} else {
-						if ((don.getIsCompany().equals("0") || StringUtils.isBlank(don.getIsCompany())) && StringUtils.isBlank(don.getOrganization())) {
+						if ((don.getIsCompany().equals("0") || StringUtils.isBlank(don.getIsCompany())) && (StringUtils.isBlank(don.getOrganization()) || don.getOrganization().equalsIgnoreCase("Anonymous" ))) {
 							if (mapDonors.containsKey("Individual")) {
 								donorList = mapDonors.get("Individual");
 								donorList.add(don);
