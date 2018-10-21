@@ -11,7 +11,9 @@ public class DonorCategoryMapping{
 	private String donorId;
 	private String organization;
 	private String category;
-	
+	public DonorCategoryMapping() {
+		
+	}
 	
 	
 	public DonorCategoryMapping(String donorId, String organization, String category) {

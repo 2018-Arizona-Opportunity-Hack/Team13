@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +36,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,8 +47,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.hackathon.inventoryserver.service.FileStorageService;
@@ -58,6 +60,7 @@ import models.AggregateResponse;
 import models.CategoryAggregate;
 import models.CategoryResponse;
 import models.Donation;
+import models.DonorCategoryMapping;
 import models.DonorCategoryResponse;
 import models.MonthlyAggregateResponse;
 import models.Response;
@@ -65,9 +68,10 @@ import models.YearlyResponse;
 import util.CategorySingleton;
 import util.Constant;
 import util.ExtractCSV;
+import util.NewDonerTempStore;
 
 @RestController
-@CrossOrigin(origins="*", allowedHeaders="*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ApplicationController {
 
 	@Autowired
@@ -93,23 +97,17 @@ public class ApplicationController {
 		return response;
 	}
 
-	   /*
-    Inventory January		lbs
-	 Grocery store		62,480.00
-	 Corp/Organization		3754.5
-	 Individual		2,545
-	 Church		603
-	 TEFAP		16,478
-	 Purchased		0
-	 Total		85,859.50
-	 Waste	minus	2858.5
-     Total		83,001.00
-    */
-	
+	/*
+	 * Inventory January lbs Grocery store 62,480.00 Corp/Organization 3754.5
+	 * Individual 2,545 Church 603 TEFAP 16,478 Purchased 0 Total 85,859.50 Waste
+	 * minus 2858.5 Total 83,001.00
+	 */
+
 	@GetMapping("/export/{year}")
-	public ResponseEntity exportExcel(@PathVariable("year") String year, HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity exportExcel(@PathVariable("year") String year, HttpServletRequest request,
+			HttpServletResponse response) {
 		response.setContentType("application/csv");
-		response.setHeader("Content-Disposition", "attachment; filename=" + "Insights_"+year+".xlsx");
+		response.setHeader("Content-Disposition", "attachment; filename=" + "Insights_" + year + ".xlsx");
 		String[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 		Workbook workbook = new XSSFWorkbook();
 		List<String> totCol = new ArrayList<>();
@@ -234,37 +232,33 @@ public class ApplicationController {
 		return getDownloadResponse("./Insights.xlsx");
 	}
 
-	
 	public static ResponseEntity getDownloadResponse(String folderPath) {
-	    File file2Upload = new File(folderPath);
-	    Path path = Paths.get(folderPath);
-	    ByteArrayResource resource = null;
-	    try {
-	        resource = new ByteArrayResource(Files.readAllBytes(path));
-	    } catch (IOException e) {
-	    	e.printStackTrace();
-	    }
+		File file2Upload = new File(folderPath);
+		Path path = Paths.get(folderPath);
+		ByteArrayResource resource = null;
+		try {
+			resource = new ByteArrayResource(Files.readAllBytes(path));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-	    return ResponseEntity.ok()
-	            .contentLength(file2Upload.length())
-	            /*.contentType("application/csv")*/
-	            .body(resource);
+		return ResponseEntity.ok().contentLength(file2Upload.length())
+				/* .contentType("application/csv") */
+				.body(resource);
 	}
-	
-	
+
 	@GetMapping("/category")
 	public CategoryResponse getCategoryList() {
 		CategoryResponse response = new CategoryResponse(200, "success");
-		Map<String, String> map= CategorySingleton.getInstance();
-		Set<String> categoryList = new HashSet<>(); 
-		for(String val : map.values()) {
+		Map<String, String> map = CategorySingleton.getInstance();
+		Set<String> categoryList = new HashSet<>();
+		for (String val : map.values()) {
 			categoryList.add(val);
 		}
 		response.addCategoryList(categoryList);
 		return response;
 	}
-	
-	
+
 	@GetMapping("/data/{year}")
 	public YearlyResponse aggregateYearlyData(@PathVariable("year") String year,
 			@RequestParam(value = "categoryList", required = false) List<String> categoryList) {
@@ -284,7 +278,7 @@ public class ApplicationController {
 		String content = "";
 		try {
 			for (String monthDir : directories) {
-				String p = path.toString()+"/"+monthDir + "/aggregate.json";
+				String p = path.toString() + "/" + monthDir + "/aggregate.json";
 				File f = new File(p);
 				if (f.exists()) {
 					content = new String(Files.readAllBytes(Paths.get(p)));
@@ -310,7 +304,7 @@ public class ApplicationController {
 	public Response aggregateMonthlyData(@PathVariable("month") String month, @PathVariable("year") String year,
 			@RequestParam(value = "categoryList", required = false) List<String> categoryList) {
 		Set<String> cList;
-		if (null!=categoryList) {
+		if (null != categoryList) {
 			cList = new HashSet<>(categoryList);
 		}
 		StringBuilder path = new StringBuilder();
@@ -341,11 +335,31 @@ public class ApplicationController {
 		}
 
 	}
-	
-	
+
 	@PostMapping("/data/missingCategory/{year}/{month}")
-	public Response addmissingCategory(@RequestBody List<Donation> donation, @PathVariable String year, @PathVariable String month)
-		{
+	public Response addmissingCategory(@RequestBody String jsonString, @PathVariable String year,
+			@PathVariable String month) {
+		List<DonorCategoryMapping> mapping = Collections.emptyList();
+		try {
+			mapping = new ObjectMapper().readValue(jsonString, new TypeReference<List<DonorCategoryMapping>>() {
+			});
+		} catch (JsonParseException e1) {
+			e1.printStackTrace();
+		} catch (JsonMappingException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		Map<String, Donation> donationMap = NewDonerTempStore.getTempDonations();
+
+		List<Donation> donation = new ArrayList<Donation>();
+		for (DonorCategoryMapping donorCat : mapping) {
+			if (donationMap.containsKey(donorCat.getDonorId())) {
+				donation.add(donationMap.get(donorCat.getDonorId()));
+			}
+		}
+
 		if (!StringUtils.isBlank(year) && !StringUtils.isBlank(month) && null != donation) {
 			StringBuffer sbPath = new StringBuffer(Constant.DATA_FOLDER);
 			sbPath.append("/").append(year);
@@ -370,61 +384,54 @@ public class ApplicationController {
 				}
 			}
 
-			Map<String,Double> categoryWeight = new HashMap<>();
-			Map<String,List<Donation>> newDonors = new HashMap<>();
+			Map<String, Double> categoryWeight = new HashMap<>();
+			Map<String, List<Donation>> newDonors = new HashMap<>();
 			int length = donation.size();
-			if(length>0)
-			{
-				int i=0;
-				Donation don =null;
-				Double weight=0.0;
-				
-				String category =null;
-				List<Donation> donorList ;
-				
-			for(i=0;i<length;i++)
-			{
-				
-				weight =0.0;
-				don = donation.get(i);
-				category =don.getCategory();
-				
-				if(categoryWeight.containsKey(don.getCategory()))
-				{
-					weight = Double.parseDouble(don.getWeight());
-					
-					categoryWeight.put(don.getCategory(), categoryWeight.get(don.getCategory()+weight));
-				}
-				else {
-					categoryWeight.put(don.getCategory(), weight);
-				}
-				if (newDonors.containsKey(don.getCategory())) {
-					donorList = newDonors.get(don.getCategory());
-					donorList.add(don);
-					newDonors.put(don.getCategory(), donorList);
-				} else {
-					donorList = new ArrayList<>();
-					donorList.add(don);
-					newDonors.put(don.getCategory(), donorList);
+			if (length > 0) {
+				int i = 0;
+				Donation don = null;
+				Double weight = 0.0;
+
+				String category = null;
+				List<Donation> donorList;
+
+				for (i = 0; i < length; i++) {
+
+					weight = 0.0;
+					don = donation.get(i);
+					category = don.getCategory();
+
+					if (categoryWeight.containsKey(don.getCategory())) {
+						weight = Double.parseDouble(don.getWeight());
+
+						categoryWeight.put(don.getCategory(), categoryWeight.get(don.getCategory() + weight));
+					} else {
+						categoryWeight.put(don.getCategory(), weight);
+					}
+					if (newDonors.containsKey(don.getCategory())) {
+						donorList = newDonors.get(don.getCategory());
+						donorList.add(don);
+						newDonors.put(don.getCategory(), donorList);
+					} else {
+						donorList = new ArrayList<>();
+						donorList.add(don);
+						newDonors.put(don.getCategory(), donorList);
 
 					}
-				
-				
-				
+
 				}
-			try {
-				addtoFiles(categoryWeight,newDonors,sbPath);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					addtoFiles(categoryWeight, newDonors, sbPath);
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					NewDonerTempStore.flushMap();
+				}
+
 			}
-			
-			
-			}
-			
-			
-			
-			}
+
+		}
 		return null;
 	}
 
@@ -434,9 +441,6 @@ public class ApplicationController {
 		int jsonLength = json.length();
 		String aggregate = "aggregate";
 		int lengthAg = aggregate.length();
-
-		// String jsonTxt = IOUtils.toString( is );
-
 		String jsonString = null;
 		Gson gson = new Gson();
 
@@ -505,6 +509,5 @@ public class ApplicationController {
 		}
 
 	}
-
 
 }

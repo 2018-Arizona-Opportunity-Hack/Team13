@@ -297,4 +297,185 @@ public class Donation {
 		this.memo = memo;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((apartment == null) ? 0 : apartment.hashCode());
+		result = prime * result + ((category == null) ? 0 : category.hashCode());
+		result = prime * result + ((city == null) ? 0 : city.hashCode());
+		result = prime * result + ((dollarValue == null) ? 0 : dollarValue.hashCode());
+		result = prime * result + ((donationDate == null) ? 0 : donationDate.hashCode());
+		result = prime * result + ((donationSource == null) ? 0 : donationSource.hashCode());
+		result = prime * result + ((donationType == null) ? 0 : donationType.hashCode());
+		result = prime * result + ((donorId == null) ? 0 : donorId.hashCode());
+		result = prime * result + ((donorType == null) ? 0 : donorType.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((foodItemCategory == null) ? 0 : foodItemCategory.hashCode());
+		result = prime * result + ((foodItemName == null) ? 0 : foodItemName.hashCode());
+		result = prime * result + ((isCompany == null) ? 0 : isCompany.hashCode());
+		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
+		result = prime * result + ((memo == null) ? 0 : memo.hashCode());
+		result = prime * result + ((middleName == null) ? 0 : middleName.hashCode());
+		result = prime * result + ((organization == null) ? 0 : organization.hashCode());
+		result = prime * result + ((quantity == null) ? 0 : quantity.hashCode());
+		result = prime * result + ((quantityType == null) ? 0 : quantityType.hashCode());
+		result = prime * result + ((salutationGreeting == null) ? 0 : salutationGreeting.hashCode());
+		result = prime * result + ((spouseName == null) ? 0 : spouseName.hashCode());
+		result = prime * result + ((state == null) ? 0 : state.hashCode());
+		result = prime * result + ((streetAddress == null) ? 0 : streetAddress.hashCode());
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		result = prime * result + ((weight == null) ? 0 : weight.hashCode());
+		result = prime * result + ((zipCode == null) ? 0 : zipCode.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Donation other = (Donation) obj;
+		if (apartment == null) {
+			if (other.apartment != null)
+				return false;
+		} else if (!apartment.equals(other.apartment))
+			return false;
+		if (category == null) {
+			if (other.category != null)
+				return false;
+		} else if (!category.equals(other.category))
+			return false;
+		if (city == null) {
+			if (other.city != null)
+				return false;
+		} else if (!city.equals(other.city))
+			return false;
+		if (dollarValue == null) {
+			if (other.dollarValue != null)
+				return false;
+		} else if (!dollarValue.equals(other.dollarValue))
+			return false;
+		if (donationDate == null) {
+			if (other.donationDate != null)
+				return false;
+		} else if (!donationDate.equals(other.donationDate))
+			return false;
+		if (donationSource == null) {
+			if (other.donationSource != null)
+				return false;
+		} else if (!donationSource.equals(other.donationSource))
+			return false;
+		if (donationType == null) {
+			if (other.donationType != null)
+				return false;
+		} else if (!donationType.equals(other.donationType))
+			return false;
+		if (donorId == null) {
+			if (other.donorId != null)
+				return false;
+		} else if (!donorId.equals(other.donorId))
+			return false;
+		if (donorType == null) {
+			if (other.donorType != null)
+				return false;
+		} else if (!donorType.equals(other.donorType))
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (firstName == null) {
+			if (other.firstName != null)
+				return false;
+		} else if (!firstName.equals(other.firstName))
+			return false;
+		if (foodItemCategory == null) {
+			if (other.foodItemCategory != null)
+				return false;
+		} else if (!foodItemCategory.equals(other.foodItemCategory))
+			return false;
+		if (foodItemName == null) {
+			if (other.foodItemName != null)
+				return false;
+		} else if (!foodItemName.equals(other.foodItemName))
+			return false;
+		if (isCompany == null) {
+			if (other.isCompany != null)
+				return false;
+		} else if (!isCompany.equals(other.isCompany))
+			return false;
+		if (lastName == null) {
+			if (other.lastName != null)
+				return false;
+		} else if (!lastName.equals(other.lastName))
+			return false;
+		if (memo == null) {
+			if (other.memo != null)
+				return false;
+		} else if (!memo.equals(other.memo))
+			return false;
+		if (middleName == null) {
+			if (other.middleName != null)
+				return false;
+		} else if (!middleName.equals(other.middleName))
+			return false;
+		if (organization == null) {
+			if (other.organization != null)
+				return false;
+		} else if (!organization.equals(other.organization))
+			return false;
+		if (quantity == null) {
+			if (other.quantity != null)
+				return false;
+		} else if (!quantity.equals(other.quantity))
+			return false;
+		if (quantityType == null) {
+			if (other.quantityType != null)
+				return false;
+		} else if (!quantityType.equals(other.quantityType))
+			return false;
+		if (salutationGreeting == null) {
+			if (other.salutationGreeting != null)
+				return false;
+		} else if (!salutationGreeting.equals(other.salutationGreeting))
+			return false;
+		if (spouseName == null) {
+			if (other.spouseName != null)
+				return false;
+		} else if (!spouseName.equals(other.spouseName))
+			return false;
+		if (state == null) {
+			if (other.state != null)
+				return false;
+		} else if (!state.equals(other.state))
+			return false;
+		if (streetAddress == null) {
+			if (other.streetAddress != null)
+				return false;
+		} else if (!streetAddress.equals(other.streetAddress))
+			return false;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		if (weight == null) {
+			if (other.weight != null)
+				return false;
+		} else if (!weight.equals(other.weight))
+			return false;
+		if (zipCode == null) {
+			if (other.zipCode != null)
+				return false;
+		} else if (!zipCode.equals(other.zipCode))
+			return false;
+		return true;
+	}
+
 }

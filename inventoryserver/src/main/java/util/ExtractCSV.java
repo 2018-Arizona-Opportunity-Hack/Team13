@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -33,28 +34,29 @@ import models.DonorCategoryResponse;
 public class ExtractCSV {
 
 	static Map<String, String> mapInit = CategorySingleton.getInstance();
-	static Map<String, Integer> mapIndex = new HashMap<>();
-	static Map<String, String> columnMapping = new HashMap<String, String>();
-	static Map<String, List<Donation>> mapDonors = new HashMap<>();
+	
 	private static AggregationService aggregationService = new AggregationServiceImpl();
 
 	public static DonorCategoryResponse readCSVFile(CSVReader csvReader, String year, String month) {
-		DonorCategoryResponse response = new DonorCategoryResponse(200, "success");
+		DonorCategoryResponse response = new DonorCategoryResponse(200, "success", month, year);
 		Set<DonorCategoryMapping> newDonorCatagoryList = new HashSet<>();
 		Set<String> newDonors = new HashSet<>();
-		mapFields();
+		 Map<String, Integer> mapIndex = new HashMap<>();
+		 Map<String, String> columnMapping = new HashMap<String, String>();
+		 Map<String, List<Donation>> mapDonors = new HashMap<>();
+		 mapFields(columnMapping);
 		try {
 			String[] donationDetails = null;
 			List<Donation> donationList = new ArrayList<Donation>();
 			int count = 0;
 			while ((donationDetails = csvReader.readNext()) != null) {
 				if (count == 0) {
-					setIndexInMap(donationDetails);
+					setIndexInMap(donationDetails,mapIndex);
 					count++;
 				} else {
 					Donation don = new Donation();
 					List<Donation> donorList = null;
-					setMembers(don, donationDetails);
+					setMembers(don, donationDetails,columnMapping, mapIndex);
 					if (mapInit.containsKey(don.getDonorId())) {
 
 						don.setCategory(mapInit.get(don.getDonorId()));
@@ -69,8 +71,7 @@ public class ExtractCSV {
 
 						}
 					} else {
-						if (don.getIsCompany().equals("0") || StringUtils.isBlank(don.getIsCompany())
-								|| StringUtils.isBlank(don.getOrganization())) {
+						if ((don.getIsCompany().equals("0") || StringUtils.isBlank(don.getIsCompany())) && StringUtils.isBlank(don.getOrganization())) {
 							if (mapDonors.containsKey("Individual")) {
 								donorList = mapDonors.get("Individual");
 								donorList.add(don);
@@ -84,14 +85,18 @@ public class ExtractCSV {
 							newDonors.add(don.getDonorId());
 							newDonorCatagoryList.add(new DonorCategoryMapping(don.getDonorId(), don.getOrganization(),
 									don.getCategory()));
-							response.setMsg("Some Donors are present in the system. Please categorize them!");
+							NewDonerTempStore.addToNewDonerList(don);
 						}
 					}
 					donationList.add(don);
+				}
+				if (!CollectionUtils.isEmpty(newDonorCatagoryList)) {
+					response.setMsg("Some Donors are present in the system. Please categorize them!");
 					response.setMapping(newDonorCatagoryList);
+					System.out.println("New donors"+ newDonorCatagoryList);
 				}
 			}
-			createFiles(donationList, year, month);
+			createFiles(donationList, year, month, mapDonors);
 			aggregationService.aggregateMonthlyData(mapDonors, year, month);
 		} catch (Exception ee) {
 			ee.printStackTrace();
@@ -100,7 +105,7 @@ public class ExtractCSV {
 		return response;
 	}
 
-	public static void setIndexInMap(String[] donation) {
+	public static void setIndexInMap(String[] donation, Map<String, Integer> mapIndex) {
 		int i = 0;
 		int length = donation.length;
 		for (i = 0; i < length; i++) {
@@ -108,7 +113,7 @@ public class ExtractCSV {
 		}
 	}
 
-	public static void setMembers(Donation donation, String[] donationDetails)
+	public static void setMembers(Donation donation, String[] donationDetails, Map<String, String> columnMapping, Map<String, Integer> mapIndex)
 			throws IllegalAccessException, InvocationTargetException {
 		for (Entry<String, String> map : columnMapping.entrySet()) {
 			if (mapIndex.containsKey(map.getKey()))
@@ -116,7 +121,7 @@ public class ExtractCSV {
 		}
 	}
 
-	public static void mapFields() {
+	public static void mapFields(Map<String, String> columnMapping) {
 
 		columnMapping.put("Donor ID", "donorId");
 		columnMapping.put("Quantity", "quantity");
@@ -138,13 +143,14 @@ public class ExtractCSV {
 		try {
 			csvReader = new CSVReader(initCsv, ',', '"', 1);
 			String[] donationDetails = null;
-			csvReader.readNext();
-			while ((donationDetails = csvReader.readNext()) != null) {
+			//csvReader.readNext();
+			while ((donationDetails = csvReader.readNext()) != null && donationDetails.length>1) {
 				map.put(donationDetails[0], donationDetails[1]);
 			}
 		} catch (Exception ee) {
 			ee.printStackTrace();
 		}
+		System.out.println(map);
 
 	}
 
@@ -157,7 +163,7 @@ public class ExtractCSV {
 
 	}
 
-	public static void createFiles(List<Donation> donation, String year, String month) throws IOException {
+	public static void createFiles(List<Donation> donation, String year, String month, Map<String, List<Donation>> mapDonors) throws IOException {
 
 		if (!StringUtils.isBlank(year) && !StringUtils.isBlank(month) && null != donation) {
 			StringBuffer sbPath = new StringBuffer(Constant.DATA_FOLDER);
