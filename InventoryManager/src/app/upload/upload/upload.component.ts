@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { DialogComponent } from '../dialog/dialog.component';
 import { UploadService } from '../upload.service';
+import { NgModel } from '@angular/forms';
 
 @Component({
   selector: 'app-upload',
@@ -10,7 +11,9 @@ import { UploadService } from '../upload.service';
 })
 export class UploadComponent {
   constructor(public dialog: MatDialog, public uploadService: UploadService) {}
-
+  ngOninit(){
+    
+  }
   public openUploadDialog() {
     let dialogRef = this.dialog.open(DialogComponent, { width: '50%', height: '50%' });
   }

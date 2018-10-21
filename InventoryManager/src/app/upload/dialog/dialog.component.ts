@@ -9,6 +9,17 @@ import { forkJoin } from 'rxjs';
   styleUrls: ['./dialog.component.css']
 })
 export class DialogComponent{
+  years: string[] = [
+    '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011',
+    '2010', '2009', '2008', '2007', '2006', '2005', '2004', '2003', '2002',
+    '2001'
+  ];
+
+  months: string[] = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
+    'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+  
   @ViewChild('file') file;
   public files: Set<File> = new Set();
   progress;
@@ -17,6 +28,8 @@ primaryButtonText = 'Upload';
 showCancelButton = true; 
 uploading = false;
 uploadSuccessful = false;
+month: string;
+year: string;
 
 constructor(public dialogRef: MatDialogRef<DialogComponent>, public uploadService: UploadService) {}
 
@@ -43,7 +56,7 @@ constructor(public dialogRef: MatDialogRef<DialogComponent>, public uploadServic
     this.uploading = true;
   
     // start the upload and save the progress map
-    this.progress = this.uploadService.upload(this.files);
+    this.progress = this.uploadService.upload(this.files,this.year,this.month);
   
     // convert the progress map into an array
     let allProgressObservables = [];
