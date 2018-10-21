@@ -1,4 +1,4 @@
-import { Component,OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { from } from 'rxjs';
 @Component({
@@ -6,11 +6,7 @@ import { from } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
-
-  constructor(){}
-
-  ngOnInit () {  
-    title = 'InventoryManager';
-  }
+export class AppComponent {
+  title = 'InventoryManager';
 }
+

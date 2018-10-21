@@ -53,4 +53,7 @@ export class UploadService {
     // return the map of progress.observables
     return status;
   }
+  public export(year:number){
+    window.location.href='http://18.237.252.206:8080/export/'+year;
+  }
 }

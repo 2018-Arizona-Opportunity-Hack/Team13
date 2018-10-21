@@ -11,51 +11,33 @@ export class DashboardComponent implements OnInit {
   dropdownList = [];
   selectedItems = [];
   dropdownSettings = {};
-  categories=["Church","Grocerry"];
+  categories=[];
   month:number;
   year:number;
   chartData=[];
+  pieChartColors:any;
+  pieChartColors2:any;
 
 constructor(private _appservice: AppService){}
 
   ngOnInit() {
 
-  this.dropdownList = [
-    { item_id: 1, item_text: 'Mumbai' },
-    { item_id: 2, item_text: 'Bangaluru' },
-    { item_id: 3, item_text: 'Pune' },
-    { item_id: 4, item_text: 'Navsari' },
-    { item_id: 5, item_text: 'New Delhi' }
-  ];
-  this.selectedItems = this.dropdownList;
-  
-  this.dropdownSettings = {
-    singleSelection: false,
-    idField: 'item_id',
-    textField: 'item_text',
-    selectAllText: 'Select All',
-    unSelectAllText: 'UnSelect All',
-    itemsShowLimit: 2,
-    allowSearchFilter: true
-  };
-  // this.chartData = [
-  //   { data: [330, 600, 260, 700], label: 'Account A' },
-  //   { data: [120, 455, 100, 340], label: 'Account B' },
-  //   { data: [45, 67, 800, 500], label: 'Account C' }
-  // ];
+    this.pieChartColors = [ {backgroundColor:["#ff9900","red","aqua","#00CCFF","#CCFF00","#00FF66","","",""]}];
+    this.pieChartColors2=[ {backgroundColor:["#ff9900","red","aqua","#00CCFF","#CCFF00","#00FF66","","",""]}];
+  this._appservice.getCategory().subscribe(data=>{
+  data["categoryList"].forEach(element => {
+    this.categories.push(element);
+     });
+  });
   this._appservice.getPieChartData(this.month,this.year).subscribe(data=>{
-    this.pieChartData=[]; 
+    this.pieChartData=[];
+    this.pieChartDollarData=[]; 
     data["aggregate"].forEach(element => {
           this.pieChartData.push(element.totalPounds);
           this.pieChartLabels.push(element.category);
+          this.pieChartDollarData.push(2); // to be changed to element.dollarValue
       });
-    this.pieChartOptions={'backgroundColor': [
-      "#FF6384",
-      "#4BC0C0",
-      "#FFCE56",
-      "#E7E9ED",
-      "#36A2EB"
-      ]};
+    
   });
 
   this._appservice.getLineChartData(this.month,this.year).subscribe(res=>{
@@ -69,8 +51,19 @@ constructor(private _appservice: AppService){}
     }
       res["resultList"].forEach(element => {
         var temp;
+        if(element["month"]=="Jan") temp=0;
+        if(element["month"]=="Feb") temp=1;
+        if(element["month"]=="Mar") temp=2;
+        if(element["month"]=="Apr") temp=3;
+        if(element["month"]=="May") temp=4;
+        if(element["month"]=="Jun") temp=5;
+        if(element["month"]=="Jul") temp=6;
         if(element["month"]=="Aug") temp=7;
         if(element["month"]=="Sep") temp=8;
+        if(element["month"]=="Oct") temp=9;
+        if(element["month"]=="Nov") temp=10;
+        if(element["month"]=="Dec") temp=11;
+
        element["aggregate"].forEach(e1 => {
          chartData.forEach(e2=>{
             if(e2["label"]==e1["category"])
@@ -90,8 +83,9 @@ onSelectAll (items: any) {
 
 public pieChartLabels:string[] = [];
 public pieChartData:number[] = [];
+public pieChartDollarData:number[]=[];
 public pieChartType:string = 'pie';
-public pieChartOptions:any = {}
+
 
 // events on slice click
 public chartClicked(e:any):void {

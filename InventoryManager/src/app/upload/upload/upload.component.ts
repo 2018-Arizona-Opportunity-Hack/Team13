@@ -14,5 +14,8 @@ export class UploadComponent {
   public openUploadDialog() {
     let dialogRef = this.dialog.open(DialogComponent, { width: '50%', height: '50%' });
   }
-
+ public downloadCSV(){
+   var year=2018;
+   this.uploadService.export(year);
+ }
 }

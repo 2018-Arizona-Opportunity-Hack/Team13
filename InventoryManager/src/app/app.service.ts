@@ -29,11 +29,11 @@ export class AppService {
   }
 
   getPieChartData(month:any,year:any):Observable<any>{
-    month="Aug";
+    month="Jan";
     year=2018;
     var k;
     k=this.endpoint+'data/'+year+'/'+month;
-    return this.http.get(this.endpoint +'data/2018/Aug').pipe(
+    return this.http.get(k).pipe(
       map(this.extractData));
   }
 

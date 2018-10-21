@@ -4,32 +4,31 @@
     <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
     <mat-datepicker #dp3 disabled="false"></mat-datepicker>
   </mat-form-field>
-
-<div class="custom-dropdown">
-  <ng-multiselect-dropdown
-    [placeholder]="'No category selected'"
-    [data]="dropdownList"
-    [(ngModel)]="selectedItems"
-    [settings]="dropdownSettings"
-    (onSelect)="onItemSelect($event)"
-    (onSelectAll)="onSelectAll($event)"
-  >
-  </ng-multiselect-dropdown>
 </div>
-</div>
-<div class="container">
-  <div class="col-sm-6 text-center">
+<div class="row">
+  <div class="col-lg-6 text-center chart1">
     <canvas baseChart
           [data]="pieChartData"
           [labels]="pieChartLabels"
           [chartType]="pieChartType"
-          [options]=""
+          [colors]="pieChartColors"
           (chartHover)="chartHovered($event)"
-          (chartClick)="chartClicked($event)"
-          ></canvas>
-       </div>   
-       </div>
- <div class="col-md-10" *ngIf="chartData[0].data.length>0">
+          (chartClick)="chartClicked($event)">
+    </canvas>
+  </div>   
+
+  <div class="col-lg-6 chart2">
+    <canvas baseChart
+          [data]="pieChartDollarData"
+          [labels]="pieChartLabels"
+          [chartType]="pieChartType"
+          [colors]="pieChartColors"
+          (chartHover)="chartHovered($event)"
+          (chartClick)="chartClicked($event)">
+    </canvas>
+  </div>  
+  </div> 
+ <div class="col-md-12 chart3" *ngIf="chartData[0].data.length>0">
     <div style="display: block;">
   <canvas baseChart width="20300"
    [chartType]="'line'"
