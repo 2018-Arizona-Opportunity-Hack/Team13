@@ -1,8 +1,6 @@
 package util;
 
-public class Constant {
-
-	
-	
+public interface Constant {
+	public static final String DATA_FOLER = "./data/";
 
 }
