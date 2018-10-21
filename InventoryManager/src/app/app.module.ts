@@ -8,11 +8,27 @@ import { HttpClientModule } from '@angular/common/http';
 import {AppService} from './app.service';
 import {MatDatepickerModule,MatFormFieldModule,MatNativeDateModule,MatInputModule} from '@angular/material'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HighchartsChartModule } from 'highcharts-angular';
+import { RouterModule, Routes } from '@angular/router';
+
+import { NavBarComponent } from './nav-bar/nav-bar.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { from } from 'rxjs';
+import { UpdateDBComponent } from './update-db/update-db.component';
+import { UploadModule } from './upload/upload.module';
+import { MatCardModule } from '@angular/material';
+
+const routes: Routes = [
+  { path: 'nav-bar', component: NavBarComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'updateDB', component: UpdateDBComponent }
+];
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    NavBarComponent,
+    DashboardComponent,
+    UpdateDBComponent
   ],
   imports: [
     BrowserModule,
@@ -24,7 +40,12 @@ import { HighchartsChartModule } from 'highcharts-angular';
     MatFormFieldModule,
     MatNativeDateModule,
     MatInputModule,BrowserAnimationsModule,
-    HighchartsChartModule
+    UploadModule,
+    MatCardModule,
+    RouterModule.forRoot(routes)
+  ],
+  exports: [
+    RouterModule
   ],
   providers: [AppService],
   bootstrap: [AppComponent]
