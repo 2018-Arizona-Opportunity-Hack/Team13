@@ -3,7 +3,7 @@ import { HttpClient, HttpRequest, HttpEventType, HttpResponse } from '@angular/c
 import { Subject } from 'rxjs';
 import { Observable } from 'rxjs';
 
-const url = 'http://18.237.252.206:8080/csv/Sep';
+const url = 'http://18.237.252.206:8080/csv/2018/Oct';
 
 @Injectable()
 export class UploadService {

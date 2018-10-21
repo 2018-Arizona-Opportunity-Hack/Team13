@@ -12,8 +12,8 @@ export class DashboardComponent implements OnInit {
   selectedItems = [];
   dropdownSettings = {};
   categories=[];
-  month:number;
-  year:number;
+  month:string="Oct";
+  year:number=2018;
   chartData=[];
   pieChartColors:any;
   pieChartColors2:any;
@@ -24,7 +24,8 @@ constructor(private _appservice: AppService){}
 
     this.pieChartColors = [ {backgroundColor:["#ff9900","red","aqua","#00CCFF","#CCFF00","#00FF66","","",""]}];
     this.pieChartColors2=[ {backgroundColor:["#ff9900","red","aqua","#00CCFF","#CCFF00","#00FF66","","",""]}];
-  this._appservice.getCategory().subscribe(data=>{
+ 
+    this._appservice.getCategory().subscribe(data=>{
   data["categoryList"].forEach(element => {
     this.categories.push(element);
      });
@@ -40,7 +41,7 @@ constructor(private _appservice: AppService){}
     
   });
 
-  this._appservice.getLineChartData(this.month,this.year).subscribe(res=>{
+  this._appservice.getLineChartData(this.year).subscribe(res=>{
     var chartData=[];
     this.chartData=[];
     var i;
@@ -106,10 +107,27 @@ chartLabels = ['January', 'February', 'March', 'April','May','June','July','Augu
 onChartClick(event) {
   console.log(event);
 }
-addEvent(type: string, event: MatDatepickerInputEvent<Date>) {
-  this.month=event.value.getMonth();
-  this.year=event.value.getFullYear();
-  console.log(this.month)
+CheckMonth(month:number):string
+{
+if(month==0) return 'Jan';
+if(month==1) return 'Feb';
+if(month==2) return 'Mar';
+if(month==3) return 'Apr';
+if(month==4) return 'May';
+if(month==5) return 'Jun';
+if(month==6) return 'Jul';
+if(month==7) return 'Aug';
+if(month==8) return 'Sep';
+if(month==9) return 'Oct';
+if(month==10) return 'Nov';
+if(month==11) return 'Dec';
 }
+addEvent(type: string, event: MatDatepickerInputEvent<Date>) {
+  var month=event.value.getMonth();
+  this.year=event.value.getFullYear();
+  this.month=this.CheckMonth(month);
+  this._appservice.getLineChartData(this.year);
+  this._appservice.getPieChartData(this.month,this.year);
+  }
 }
 

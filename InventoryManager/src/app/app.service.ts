@@ -28,17 +28,17 @@ export class AppService {
       map(this.extractData));
   }
 
-  getPieChartData(month:any,year:any):Observable<any>{
-    month="Jan";
-    year=2018;
+  getPieChartData(month:string,year:any):Observable<any>{
+    month=month;
+    year=year;
     var k;
     k=this.endpoint+'data/'+year+'/'+month;
     return this.http.get(k).pipe(
       map(this.extractData));
   }
 
-  getLineChartData(month:any,year:any):Observable<any>{
-    year=2018;
+  getLineChartData(year:any):Observable<any>{
+    year=year;
     var k;
     k=this.endpoint+'data/'+year;
     return this.http.get(k).pipe(

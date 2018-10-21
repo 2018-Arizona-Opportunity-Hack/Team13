@@ -19,7 +19,7 @@
 <div class="mx-auto" style="width: 200px;">
     <div class="row voffset3">
         <div class="col-lg-12">
-        <div>Enter Year<input #year/></div>
+        <div>Enter Year<input [(ngModel)]="year"/></div>
             <p>
     <button mat-raised-button (click)="downloadCSV()">Download Aggregarated report</button>
     </p>
