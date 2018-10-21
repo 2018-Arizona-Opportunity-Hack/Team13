@@ -7,9 +7,10 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { UploadService } from './upload.service';
 import { HttpClientModule } from '@angular/common/http';
 import { UploadComponent } from './upload/upload.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  imports: [CommonModule, MatButtonModule, MatDialogModule, MatListModule, FlexLayoutModule, HttpClientModule, BrowserAnimationsModule, MatProgressBarModule],
+  imports: [CommonModule, MatButtonModule, MatDialogModule, MatListModule, FlexLayoutModule, HttpClientModule, BrowserAnimationsModule,FormsModule, MatProgressBarModule],
   declarations: [UploadComponent, DialogComponent],
   exports: [UploadComponent],
   entryComponents: [DialogComponent], // Add the DialogComponent as entry component

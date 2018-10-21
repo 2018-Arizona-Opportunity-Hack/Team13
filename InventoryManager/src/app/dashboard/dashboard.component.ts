@@ -17,6 +17,7 @@ export class DashboardComponent implements OnInit {
   chartData=[];
   pieChartColors:any;
   pieChartColors2:any;
+  planModel: any = {start_time: new Date() };
 
 constructor(private _appservice: AppService){}
 
@@ -127,7 +128,16 @@ addEvent(type: string, event: MatDatepickerInputEvent<Date>) {
   this.year=event.value.getFullYear();
   this.month=this.CheckMonth(month);
   this._appservice.getLineChartData(this.year);
-  this._appservice.getPieChartData(this.month,this.year);
+  this._appservice.getPieChartData(this.month,this.year).subscribe(data=>{
+    this.pieChartData=[];
+    this.pieChartDollarData=[]; 
+    this.pieChartLabels=[];
+    data["aggregate"].forEach(element => {
+      this.pieChartData.push(element.totalPounds);
+      this.pieChartLabels.push(element.category);
+      this.pieChartDollarData.push(2); // to be changed to element.dollarValue
+    });
+  });
   }
 }
 

@@ -1,6 +1,6 @@
 <div class="main-header-dropdown">
   <mat-form-field>
-    <input matInput [matDatepicker]="dp3" disabled (dateInput)="addEvent('input', $event)" (dateChange)="addEvent('change', $event)">
+    <input matInput [matDatepicker]="dp3" disabled [(ngModel)]="planModel.start_time" (dateChange)="addEvent('change', $event)">
     <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
     <mat-datepicker #dp3 disabled="false"></mat-datepicker>
   </mat-form-field>
