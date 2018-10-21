@@ -110,7 +110,7 @@ public class ApplicationController {
 		response.setHeader("Content-Disposition", "attachment; filename=" + "Insights_" + year + ".xlsx");
 		String[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 		Workbook workbook = new XSSFWorkbook();
-		List<String> totCol = new ArrayList<>();
+		Set<String> totCol = new HashSet<>();
 		Map<String, Double> totpounds = new HashMap<>();
 		for (String month : months) {
 			String[] columns = { "Inventory_" + month + "_" + year, "Pounds(lbs)" };
@@ -153,7 +153,7 @@ public class ApplicationController {
 					Row row = sheet.createRow(rowNum);
 					row.createCell(0).setCellValue(cat.getCategory());
 					row.createCell(1).setCellValue(cat.getTotalPounds());
-					totCol.add(rowNum - 1, cat.getCategory());
+					totCol.add(cat.getCategory());
 					totpounds.putIfAbsent(cat.getCategory(), 0.0);
 					totpounds.put(cat.getCategory(), totpounds.get(cat.getCategory()) + cat.getTotalPounds());
 					rowNum++;
@@ -163,7 +163,7 @@ public class ApplicationController {
 					row.createCell(0).setCellValue(cat.getCategory());
 					row.createCell(1).setCellValue(-1 * cat.getTotalPounds());
 					total -= (cat.getTotalPounds() == null ? 0.0 : cat.getTotalPounds());
-					totCol.add(rowNum - 1, cat.getCategory());
+					totCol.add(cat.getCategory());
 					totpounds.putIfAbsent(cat.getCategory(), 0.0);
 					totpounds.put(cat.getCategory(), totpounds.get(cat.getCategory()) - cat.getTotalPounds());
 					rowNum++;
