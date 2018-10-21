@@ -9,13 +9,15 @@ import { map, catchError, tap } from 'rxjs/operators';
 export class AppService {
 
   constructor(private http: HttpClient) { }
-  readonly endpoint = 'http://localhost:3000/api/v1/';
+  readonly endpoint = 'http://18.237.252.206:8080/';
   readonly httpOptions = {
     headers: new HttpHeaders({
       'Content-Type':  'application/json'
     })
   };
 
+  public year:number;
+  public month:string;
   private extractData(res: Response) {
     let body = res;
     return body || { };
@@ -27,21 +29,19 @@ export class AppService {
   }
 
   getPieChartData(month:any,year:any):Observable<any>{
-
-    let params=new HttpParams()
-    .set('month',month)
-    .set('year',year);
-    
-    return this.http.get(this.endpoint +'aggredatedata/',{params}).pipe(
+    month="Aug";
+    year=2018;
+    var k;
+    k=this.endpoint+'data/'+year+'/'+month;
+    return this.http.get(this.endpoint +'data/2018/Aug').pipe(
       map(this.extractData));
   }
 
   getLineChartData(month:any,year:any):Observable<any>{
-    let params=new HttpParams()
-    .set('month',month)
-    .set('year',year);
-
-    return this.http.get(this.endpoint + 'data/',{params}).pipe(
+    year=2018;
+    var k;
+    k=this.endpoint+'data/'+year;
+    return this.http.get(k).pipe(
       map(this.extractData)
     );
   }

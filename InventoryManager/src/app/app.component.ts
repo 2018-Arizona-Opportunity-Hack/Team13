@@ -19,18 +19,15 @@ export class AppComponent implements OnInit {
   dropdownList = [];
   selectedItems = [];
   dropdownSettings = {};
-  categories=[];
+  categories=["Church","Grocerry"];
   month:number;
   year:number;
-  public piechartData:PieChartData;
+  chartData=[];
   public lineChartData:LineChartData;
   constructor(private _appservice:AppService){}
 
   ngOnInit () {  
-    this._appservice.getCategory()
-    .subscribe(data=>{
-        this.categories=data;
-    });
+   
     this.dropdownList = [
       { item_id: 1, item_text: 'Mumbai' },
       { item_id: 2, item_text: 'Bangaluru' },
@@ -39,7 +36,7 @@ export class AppComponent implements OnInit {
       { item_id: 5, item_text: 'New Delhi' }
     ];
     this.selectedItems = this.dropdownList;
-
+    
     this.dropdownSettings = {
       singleSelection: false,
       idField: 'item_id',
@@ -49,12 +46,47 @@ export class AppComponent implements OnInit {
       itemsShowLimit: 2,
       allowSearchFilter: true
     };
+    // this.chartData = [
+    //   { data: [330, 600, 260, 700], label: 'Account A' },
+    //   { data: [120, 455, 100, 340], label: 'Account B' },
+    //   { data: [45, 67, 800, 500], label: 'Account C' }
+    // ];
     this._appservice.getPieChartData(this.month,this.year).subscribe(data=>{
-        this.piechartData=data;
+      this.pieChartData=[]; 
+      data["aggregate"].forEach(element => {
+            this.pieChartData.push(element.totalPounds);
+            this.pieChartLabels.push(element.category);
+        });
+      this.pieChartOptions={'backgroundColor': [
+        "#FF6384",
+        "#4BC0C0",
+        "#FFCE56",
+        "#E7E9ED",
+        "#36A2EB"
+        ]};
     });
 
-    this._appservice.getLineChartData(this.month,this.year).subscribe(data=>{
-        this.lineChartData=data
+    this._appservice.getLineChartData(this.month,this.year).subscribe(res=>{
+      var chartData=[];
+      this.chartData=[];
+      var i;
+      for(i=0;i<this.categories.length;i++)
+      {
+        var temp={data: [0,0,0,0,0,0,0,0,0,0,0,0], label: this.categories[i]};
+        chartData.push(temp);
+      }
+        res["resultList"].forEach(element => {
+          var temp;
+          if(element["month"]=="Aug") temp=7;
+          if(element["month"]=="Sep") temp=8;
+         element["aggregate"].forEach(e1 => {
+           chartData.forEach(e2=>{
+              if(e2["label"]==e1["category"])
+                e2["data"][temp]=e1["totalPounds"]
+           });
+         });
+        });
+        this.chartData=chartData;
     });
   }
   onItemSelect (item:any) {
@@ -64,16 +96,10 @@ export class AppComponent implements OnInit {
     console.log(items);
   }
   title = 'InventoryManager';
-  public pieChartLabels:string[] = ["Pending", "InProgress", "OnHold", "Complete", "Cancelled"];
-  public pieChartData:number[] = [21, 39, 10, 10, 16];
+  public pieChartLabels:string[] = [];
+  public pieChartData:number[] = [];
   public pieChartType:string = 'pie';
-  public pieChartOptions:any = {'backgroundColor': [
-            "#FF6384",
-            "#4BC0C0",
-            "#FFCE56",
-            "#E7E9ED",
-            "#36A2EB"
-            ]}
+  public pieChartOptions:any = {}
  
   // events on slice click
   public chartClicked(e:any):void {
@@ -88,13 +114,8 @@ export class AppComponent implements OnInit {
     responsive: true
   };
 
-  chartData = [
-    { data: [330, 600, 260, 700], label: 'Account A' },
-    { data: [120, 455, 100, 340], label: 'Account B' },
-    { data: [45, 67, 800, 500], label: 'Account C' }
-  ];
 
-  chartLabels = ['January', 'February', 'March', 'April'];
+  chartLabels = ['January', 'February', 'March', 'April','May','June','July','August','September','October','November','December'];
 
   onChartClick(event) {
     console.log(event);

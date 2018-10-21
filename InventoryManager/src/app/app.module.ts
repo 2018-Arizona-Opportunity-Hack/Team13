@@ -8,6 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import {AppService} from './app.service';
 import {MatDatepickerModule,MatFormFieldModule,MatNativeDateModule,MatInputModule} from '@angular/material'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatDatepickerModule,
     MatFormFieldModule,
     MatNativeDateModule,
-    MatInputModule,BrowserAnimationsModule
+    MatInputModule,BrowserAnimationsModule,
+    HighchartsChartModule
   ],
   providers: [AppService],
   bootstrap: [AppComponent]

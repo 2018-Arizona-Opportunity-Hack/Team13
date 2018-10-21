@@ -18,16 +18,20 @@
 </div>
 </div>
 <div class="container">
-  <div class="col-sm-4 text-center">
+  <div class="col-sm-6 text-center">
     <canvas baseChart
           [data]="pieChartData"
           [labels]="pieChartLabels"
           [chartType]="pieChartType"
-          [options]="pieChartOptions"
+          [options]=""
           (chartHover)="chartHovered($event)"
           (chartClick)="chartClicked($event)"
           ></canvas>
-  <canvas baseChart
+       </div>   
+       </div>
+ <div class="col-md-10" *ngIf="chartData[0].data.length>0">
+    <div style="display: block;">
+  <canvas baseChart width="20300"
    [chartType]="'line'"
       [datasets]="chartData"
       [labels]="chartLabels"
@@ -35,5 +39,6 @@
       [legend]="true"
       (chartClick)="onChartClick($event)"
   ></canvas>
-      </div>
-</div>
+   </div>
+  </div>
+
