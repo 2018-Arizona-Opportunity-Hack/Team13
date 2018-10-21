@@ -1,28 +1,28 @@
 donor_id,category
-2011,Grocerry
-440,Grocerry
-2030,Grocerry
-442,Grocerry
-333,Grocerry
-1120,Grocerry
-1966,Grocerry
-1999,Grocerry
-441,Grocerry
-58,Grocerry
-1950,Grocerry
-855,Grocerry
-2000,Grocerry
-1230,Grocerry
-2209,Grocerry
-876,Grocerry
-43,Grocerry
-1233,Grocerry
-736,Grocerry
-2200,Grocerry
+2011,Grocery Store
+440,Grocery Store
+2030,Grocery Store
+442,Grocery Store
+333,Grocery Store
+1120,Grocery Store
+1966,Grocery Store
+1999,Grocery Store
+441,Grocery Store
+58,Grocery Store
+1950,Grocery Store
+855,Grocery Store
+2000,Grocery Store
+1230,Grocery Store
+2209,Grocery Store
+876,Grocery Store
+43,Grocery Store
+1233,Grocery Store
+736,Grocery Store
+2200,Grocery Store
 1351,Church
 834,Church
 1293,Church
-2201,Grocerry
+2201,Grocery Store
 560,Church
 1763,Corporate Organization
 737,Corporate Organization
@@ -30,7 +30,7 @@ donor_id,category
 1892,Corporate Organization
 2215,Corporate Organization
 2197,Corporate Organization
-439,Grocerry
+439,Grocery Store
 329,Corporate Organization
 2147,Corporate Organization
 1737,Corporate Organization
@@ -85,4 +85,15 @@ donor_id,category
 1618,Corporate Organization
 2236,Corporate Organization
 2227,Corporate Organization
+1560,Grocery Store
+2373,Grocery Store
+2427,Church
+2425,Grocery Store
+2409,Corporate Organization
+1578,Corporate Organization
+2345,Corporate Organization
+2412,Corporate Organization
+2379,Corporate Organization
+1578,Corporate Organization
+2409,Corporate Organization
 
