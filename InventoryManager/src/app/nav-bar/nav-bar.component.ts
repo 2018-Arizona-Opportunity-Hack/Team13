@@ -15,7 +15,9 @@ export class NavBarComponent implements OnInit {
     this.navbarOpen = !this.navbarOpen;
   }
   
-  constructor(private router: Router) { }
+  constructor(private router: Router) { 
+    localStorage.removeItem('unknownCategory');
+  }
 
   ngOnInit() {
     this.dashBoardTapped();

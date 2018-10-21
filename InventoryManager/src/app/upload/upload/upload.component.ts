@@ -4,11 +4,13 @@ import { DialogComponent } from '../dialog/dialog.component';
 import { UploadService } from '../upload.service';
 import { NgModel } from '@angular/forms';
 import {MatTableDataSource} from '@angular/material';
+import { AppService } from 'src/app/app.service';
 
 
 export interface Element {
-  name: string;
-  position: number;
+  donorId: string,
+  organization: string;
+  category: string;
 }
 
 @Component({
@@ -18,12 +20,21 @@ export interface Element {
 })
 
 export class UploadComponent {
-  constructor(public dialog: MatDialog, public uploadService: UploadService) {}
-  displayedColumns = ['position', 'name'];
-  dataSource = new MatTableDataSource<Element>(ELEMENT_DATA);
-  ngOninit(){
-    
+  constructor(public dialog: MatDialog, public uploadService: UploadService, public appService: AppService) {
+    dialog.afterAllClosed.subscribe(()=>{
+      this.checkUnknownCategory();
+    });
   }
+  displayedColumns = ['donorId', 'organization', 'category'];
+  dataSource:MatTableDataSource<Element>;
+  ngOninit(){
+    this.appService.getCategory().subscribe(data=>{
+      data["categoryList"].forEach(element => {
+        this.categories.push(element);
+         });
+      });
+  }
+
   public openUploadDialog() {
     let dialogRef = this.dialog.open(DialogComponent, { width: '50%', height: '50%' });
   }
@@ -31,9 +42,33 @@ export class UploadComponent {
  public downloadCSV(){
    this.uploadService.export(this.year);
  }
+ categories;
+ unknownCategoriesArray:Element[];
+
+ shouldShowCategoryAddView = false;
+ data: JSON;
+ monthReceived:string;
+ yearReceived:string;
+
+ checkUnknownCategory(){
+  this.data = JSON.parse(localStorage.getItem('unknownCategory'))
+  this.unknownCategoriesArray = this.data['mapping'];
+  this.monthReceived = this.data['month'];
+  this.yearReceived = this.data['year'];
+  if (this.unknownCategoriesArray != null){
+    this.shouldShowCategoryAddView = true;
+    console.log(this.unknownCategoriesArray)
+    this.dataSource = new MatTableDataSource<Element>(this.unknownCategoriesArray);
+    console.log(this.dataSource)
+  }
 }
 
-const ELEMENT_DATA:Element[]=[
-  {position:1,name:"Company1"},
-  {position:2,name:"Company2"}
-];
+onCategorySubmit(){
+  this.appService.postCategories(this.unknownCategoriesArray,this.monthReceived,this.yearReceived);
+}
+}
+
+// const ELEMENT_DATA:Element[]=[
+//   {donorId:"1",organization:"Company1",category:"grocery"},
+//   {donorId:"2",organization:"Company2",category:"grocery"}
+// ];
