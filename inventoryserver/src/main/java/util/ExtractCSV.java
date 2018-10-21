@@ -17,7 +17,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
+
 import org.springframework.stereotype.Component;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 import com.google.gson.Gson;
 import com.hackathon.inventoryserver.service.AggregationService;
@@ -52,6 +57,7 @@ public class ExtractCSV {
 					List<Donation> donorList = null;
 					setMembers(don, donationDetails);
 					if (mapInit.containsKey(don.getDonorId())) {
+						
 						don.setCategory(mapInit.get(don.getDonorId()));
 						if (mapDonors.containsKey(don.getCategory())) {
 							donorList = mapDonors.get(don.getCategory());
@@ -63,17 +69,33 @@ public class ExtractCSV {
 							mapDonors.put(don.getCategory(), donorList);
 
 						}
-					} else
+					} else {
+						if(don.getIsCompany().equals("0")) {
+							if(mapDonors.containsKey("Individual"))
+									{
+										donorList= mapDonors.get("Individual");
+										donorList.add(don);
+										mapDonors.put("Individual",donorList);
+									}else {
+										donorList =new ArrayList<>();
+										donorList.add(don);
+										mapDonors.put("Individual", donorList);
+									}
+						}
+						else {
 						newDonors.add(don.getDonorId());
+						}
+					}
 					donationList.add(don);
 				}
 			}
+			//System.out.println("NewDonors"+newDonors.size());
 			createFiles(donationList, year, month);
 			aggregationService.aggregateMonthlyData(mapDonors, year, month);
 
-			for (Donation e : donationList) {
+			/**for (Donation e : donationList) {
 				System.out.println(e);
-			}
+			}*/
 		} catch (Exception ee) {
 			ee.printStackTrace();
 		}
@@ -136,50 +158,53 @@ public class ExtractCSV {
 	}
 
 	public static void createFiles(List<Donation> donation, String year, String month) throws IOException {
-		// StringBuffer sbPath = new StringBuffer("D:\\Files");
-		StringBuffer sbPath = new StringBuffer(Constant.DATA_FOLDER);
-		sbPath.append("/").append(year);
-		String categoryName = null;
-		File file = new File(sbPath.toString());
-		if (!file.exists()) {
-			if (file.mkdir()) {
-				System.out.println("Directory is created!");
-			} else {
-				System.out.println("Failed to create directory!");
+		
+		if (!StringUtils.isBlank(year) && !StringUtils.isBlank(month) && null != donation) {
+			StringBuffer sbPath = new StringBuffer(Constant.DATA_FOLDER);
+			// StringBuffer sbPath = new StringBuffer("D:\\Files");
+			sbPath.append("/").append(year);
+			String categoryName = null;
+			File file = new File(sbPath.toString());
+			if (!file.exists()) {
+				if (file.mkdir()) {
+					System.out.println("Directory is created!");
+				} else {
+					System.out.println("Failed to create directory!");
+				}
 			}
-		}
-		sbPath.append("/").append(month);
+			sbPath.append("/").append(month);
 
-		file = null;
-		file = new File(sbPath.toString());
-		if (!file.exists()) {
-			if (file.mkdir()) {
-				// System.out.println("Directory is created!");
-			} else {
-				System.out.println("Failed to create directory!");
-			}
-		}
-
-		int length = 0;
-		String json = ".json";
-		int jsonLength = json.length();
-		String jsonCategory = null;
-		Gson gson = new Gson();
-		for (Entry<String, List<Donation>> entry : mapDonors.entrySet()) {
-			categoryName = entry.getKey();
-			length = categoryName.length();
-			sbPath.append("/").append(categoryName).append(json);
-			jsonCategory = gson.toJson(entry.getValue());
 			file = null;
 			file = new File(sbPath.toString());
-			try (FileWriter fileWrite = new FileWriter(sbPath.toString())) {
-				fileWrite.write(jsonCategory);
-				// System.out.println("Successfully Copied JSON Object to File...");
-				// System.out.println("\nJSON Object: " + jsonCategory);
+			if (!file.exists()) {
+				if (file.mkdir()) {
+					// System.out.println("Directory is created!");
+				} else {
+					System.out.println("Failed to create directory!");
+				}
 			}
-			sbPath.delete(sbPath.length() - length - jsonLength - 1, sbPath.length());
-		}
 
+			int length = 0;
+			String json = ".json";
+			int jsonLength = json.length();
+			String jsonCategory = null;
+			Gson gson = new Gson();
+			for (Entry<String, List<Donation>> entry : mapDonors.entrySet()) {
+				categoryName = entry.getKey();
+				length = categoryName.length();
+				sbPath.append("/").append(categoryName).append(json);
+				jsonCategory = gson.toJson(entry.getValue());
+				file = null;
+				file = new File(sbPath.toString());
+				try (FileWriter fileWrite = new FileWriter(sbPath.toString())) {
+					fileWrite.write(jsonCategory);
+					// System.out.println("Successfully Copied JSON Object to File...");
+					// System.out.println("\nJSON Object: " + jsonCategory);
+				}
+				sbPath.delete(sbPath.length() - length - jsonLength - 1, sbPath.length());
+			}
+
+		}
 	}
 
 }
