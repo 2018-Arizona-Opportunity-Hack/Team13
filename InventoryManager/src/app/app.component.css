@@ -1,0 +1,5 @@
+.main-header-dropdown{
+    width: 200px;
+    margin-left: 85%;
+}
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
