@@ -48,7 +48,7 @@ public class ApplicationController {
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(fileName));
 			CSVReader csvReader = new CSVReader(reader);
-			ExtractCSV.readCSVFile(csvReader);
+			ExtractCSV.readCSVFile(csvReader, year, month);
 		} catch (FileNotFoundException e) {
 
 			e.printStackTrace();

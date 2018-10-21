@@ -39,6 +39,7 @@ public class Donation {
 	private String memo;
 	private String donorId;
 	private String isCompany;
+	private String category;
 
 	public Donation(String organization, String firstName, String middleName, String lastName, String email,
 			String spouseName, String salutationGreeting, String streetAddress, String apartment, String city,
@@ -73,6 +74,14 @@ public class Donation {
 		this.value = value;
 		this.dollarValue = dollarValue;
 		this.memo = memo;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
 	public String getIsCompany() {
