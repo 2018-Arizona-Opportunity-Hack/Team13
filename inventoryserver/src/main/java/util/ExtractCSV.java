@@ -17,12 +17,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
-
-import org.springframework.stereotype.Component;
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.hackathon.inventoryserver.service.AggregationService;
@@ -30,19 +26,22 @@ import com.hackathon.inventoryserver.service.AggregationServiceImpl;
 import com.opencsv.CSVReader;
 
 import models.Donation;
+import models.DonorCategoryMapping;
+import models.DonorCategoryResponse;
+
 @Component
 public class ExtractCSV {
 
 	static Map<String, String> mapInit = CategorySingleton.getInstance();
 	static Map<String, Integer> mapIndex = new HashMap<>();
 	static Map<String, String> columnMapping = new HashMap<String, String>();
-	static Set<String> newDonors = new HashSet<>();
 	static Map<String, List<Donation>> mapDonors = new HashMap<>();
-	
 	private static AggregationService aggregationService = new AggregationServiceImpl();
 
-	public static void readCSVFile(CSVReader csvReader, String year, String month) {
-
+	public static DonorCategoryResponse readCSVFile(CSVReader csvReader, String year, String month) {
+		DonorCategoryResponse response = new DonorCategoryResponse(200, "success");
+		Set<DonorCategoryMapping> newDonorCatagoryList = new HashSet<>();
+		Set<String> newDonors = new HashSet<>();
 		mapFields();
 		try {
 			String[] donationDetails = null;
@@ -57,7 +56,7 @@ public class ExtractCSV {
 					List<Donation> donorList = null;
 					setMembers(don, donationDetails);
 					if (mapInit.containsKey(don.getDonorId())) {
-						
+
 						don.setCategory(mapInit.get(don.getDonorId()));
 						if (mapDonors.containsKey(don.getCategory())) {
 							donorList = mapDonors.get(don.getCategory());
@@ -70,35 +69,35 @@ public class ExtractCSV {
 
 						}
 					} else {
-						if(don.getIsCompany().equals("0")) {
-							if(mapDonors.containsKey("Individual"))
-									{
-										donorList= mapDonors.get("Individual");
-										donorList.add(don);
-										mapDonors.put("Individual",donorList);
-									}else {
-										donorList =new ArrayList<>();
-										donorList.add(don);
-										mapDonors.put("Individual", donorList);
-									}
-						}
-						else {
-						newDonors.add(don.getDonorId());
+						if (don.getIsCompany().equals("0") || StringUtils.isBlank(don.getIsCompany())
+								|| StringUtils.isBlank(don.getOrganization())) {
+							if (mapDonors.containsKey("Individual")) {
+								donorList = mapDonors.get("Individual");
+								donorList.add(don);
+								mapDonors.put("Individual", donorList);
+							} else {
+								donorList = new ArrayList<>();
+								donorList.add(don);
+								mapDonors.put("Individual", donorList);
+							}
+						} else {
+							newDonors.add(don.getDonorId());
+							newDonorCatagoryList.add(new DonorCategoryMapping(don.getDonorId(), don.getOrganization(),
+									don.getCategory()));
+							response.setMsg("Some Donors are present in the system. Please categorize them!");
 						}
 					}
 					donationList.add(don);
+					response.setMapping(newDonorCatagoryList);
 				}
 			}
-			//System.out.println("NewDonors"+newDonors.size());
 			createFiles(donationList, year, month);
 			aggregationService.aggregateMonthlyData(mapDonors, year, month);
-
-			/**for (Donation e : donationList) {
-				System.out.println(e);
-			}*/
 		} catch (Exception ee) {
 			ee.printStackTrace();
 		}
+
+		return response;
 	}
 
 	public static void setIndexInMap(String[] donation) {
@@ -129,6 +128,7 @@ public class ExtractCSV {
 		columnMapping.put("Email Address", "email");
 		columnMapping.put("First Name", "firstName");
 		columnMapping.put("Last Name", "lastName");
+		columnMapping.put("Company / Organization Name", "organization");
 
 	}
 
@@ -158,7 +158,7 @@ public class ExtractCSV {
 	}
 
 	public static void createFiles(List<Donation> donation, String year, String month) throws IOException {
-		
+
 		if (!StringUtils.isBlank(year) && !StringUtils.isBlank(month) && null != donation) {
 			StringBuffer sbPath = new StringBuffer(Constant.DATA_FOLDER);
 			// StringBuffer sbPath = new StringBuffer("D:\\Files");
