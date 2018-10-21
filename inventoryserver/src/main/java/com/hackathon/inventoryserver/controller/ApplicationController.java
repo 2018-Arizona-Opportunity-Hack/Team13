@@ -3,6 +3,7 @@ package com.hackathon.inventoryserver.controller;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Map;
 
 import javax.websocket.server.PathParam;
 
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.hackathon.inventoryserver.service.FileStorageService;
 
 import models.Response;
+import util.CategorySingleton;
 import util.ExtractCSV;
 
 @RestController
@@ -27,6 +29,7 @@ public class ApplicationController {
 	@PostMapping("/csv/{year}/{month}")
 	public Response uploadFile(@RequestParam("file") MultipartFile file, @PathParam("month") String month,
 			@PathParam("year") String year) {
+	
 		String fileName = fileStorageService.storeFile(file);
 		System.out.println(fileName + "::" + month + "::" + year);
 		File convFile = new File(fileName);

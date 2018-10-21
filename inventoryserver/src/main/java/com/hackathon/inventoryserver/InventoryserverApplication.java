@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import models.FileStorageProperties;
+import util.CategorySingleton;
 
 
 @SpringBootApplication
@@ -17,7 +18,6 @@ public class InventoryserverApplication {
 
 	public static void main(String[] args) throws IOException {
 		SpringApplication.run(InventoryserverApplication.class, args);
-
-		
+		CategorySingleton.getInstance();
 	}
 }
