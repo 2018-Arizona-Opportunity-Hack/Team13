@@ -75,7 +75,7 @@ public class ApplicationController {
 	}
 
 	@GetMapping("/data/{year}")
-	public Response aggregateYearlyData(@PathVariable("year") String year,
+	public YearlyResponse aggregateYearlyData(@PathVariable("year") String year,
 			@RequestParam(value = "categoryList", required = false) List<String> categoryList) {
 		YearlyResponse response = new YearlyResponse(200, "success");
 		List<MonthlyAggregateResponse> resultList = new ArrayList<MonthlyAggregateResponse>();
