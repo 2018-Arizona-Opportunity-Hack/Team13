@@ -1,9 +1,10 @@
 package models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MonthlyAggregateResponse {
+public class MonthlyAggregateResponse implements Serializable{
 
 	public MonthlyAggregateResponse(String month, List<CategoryAggregate> aggregate) {
 		this.month = month;

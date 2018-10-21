@@ -1,5 +1,6 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class YearlyResponse extends Response {
@@ -8,7 +9,7 @@ public class YearlyResponse extends Response {
 		super(code, msg);
 	}
 
-	List<MonthlyAggregateResponse> resultList;
+	List<MonthlyAggregateResponse> resultList = new ArrayList<>();
 	
 	
 	
@@ -19,7 +20,7 @@ public class YearlyResponse extends Response {
 
 
 	public void setResultList(List<MonthlyAggregateResponse> resultList) {
-		this.resultList = resultList;
+		this.resultList.addAll(resultList);
 	}
 
 	private static final long serialVersionUID = -8682641583908906169L;

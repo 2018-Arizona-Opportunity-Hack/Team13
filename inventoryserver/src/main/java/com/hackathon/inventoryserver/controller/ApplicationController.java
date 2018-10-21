@@ -93,9 +93,10 @@ public class ApplicationController {
 		String content = "";
 		try {
 			for (String monthDir : directories) {
-				File f = new File(monthDir + "/aggregate.json");
+				String p = path.toString()+"/"+monthDir + "/aggregate.json";
+				File f = new File(p);
 				if (f.exists()) {
-					content = new String(Files.readAllBytes(Paths.get(monthDir + "/aggregate.json")));
+					content = new String(Files.readAllBytes(Paths.get(p)));
 					System.out.println(content);
 					List<CategoryAggregate> categoiesJsonList = mapper.readValue(content,
 							new TypeReference<List<CategoryAggregate>>() {
