@@ -58,6 +58,7 @@ import models.AggregateResponse;
 import models.CategoryAggregate;
 import models.CategoryResponse;
 import models.Donation;
+import models.DonorCategoryResponse;
 import models.MonthlyAggregateResponse;
 import models.Response;
 import models.YearlyResponse;
@@ -75,21 +76,21 @@ public class ApplicationController {
 	@PostMapping("/csv/{year}/{month}")
 	public Response uploadFile(@RequestParam("file") MultipartFile file, @PathVariable("month") String month,
 			@PathVariable("year") String year) {
-
+		DonorCategoryResponse response = null;
 		String fileName = fileStorageService.storeFile(file);
 		System.out.println(fileName + "::" + month + "::" + year);
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(fileName));
 			CSVReader csvReader = new CSVReader(reader);
-			ExtractCSV.readCSVFile(csvReader, year, month);
+			response = ExtractCSV.readCSVFile(csvReader, year, month);
 		} catch (FileNotFoundException e) {
-
 			e.printStackTrace();
+			response = new DonorCategoryResponse(400, "Excepton");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			response = new DonorCategoryResponse(400, "Excepton");
 		}
-		return new Response(200, "success");
+		return response;
 	}
 
 	   /*
@@ -429,84 +430,80 @@ public class ApplicationController {
 
 	private void addtoFiles(Map<String, Double> categoryWeight, Map<String, List<Donation>> newDonors,
 			StringBuffer sbPath) throws IOException {
-		String json =".json";
+		String json = ".json";
 		int jsonLength = json.length();
-		String aggregate ="aggregate";
+		String aggregate = "aggregate";
 		int lengthAg = aggregate.length();
-		
-		
-//String jsonTxt = IOUtils.toString( is );
+
+		// String jsonTxt = IOUtils.toString( is );
 
 		String jsonString = null;
-				Gson gson = new Gson();
-			
-				sbPath.append("/").append(aggregate).append(json);
-				InputStream is =   ApplicationController.class.getResourceAsStream( sbPath.toString());
-				jsonString = IOUtils.toString( is );
-				
-				Map<String,Double> mapWeight = new ObjectMapper().readValue(jsonString, HashMap.class);
-				is.close();
-				
-				String categoryName=null;
-				Double weight = 0.0D;
-				for(Entry<String,Double> category:categoryWeight.entrySet())
-				{
-					weight =0.0D;
-					categoryName = category.getKey();
-					if(mapWeight.containsKey(categoryName))
-					{
-						weight = mapWeight.get(categoryName)+category.getValue();
-						mapWeight.put(categoryName, weight);
-					}else {
-						mapWeight.put(categoryName, category.getValue());
-					}
+		Gson gson = new Gson();
+
+		sbPath.append("/").append(aggregate).append(json);
+		InputStream is = ApplicationController.class.getResourceAsStream(sbPath.toString());
+		jsonString = IOUtils.toString(is);
+
+		Map<String, Double> mapWeight = new ObjectMapper().readValue(jsonString, HashMap.class);
+		is.close();
+
+		String categoryName = null;
+		Double weight = 0.0D;
+		for (Entry<String, Double> category : categoryWeight.entrySet()) {
+			weight = 0.0D;
+			categoryName = category.getKey();
+			if (mapWeight.containsKey(categoryName)) {
+				weight = mapWeight.get(categoryName) + category.getValue();
+				mapWeight.put(categoryName, weight);
+			} else {
+				mapWeight.put(categoryName, category.getValue());
+			}
+		}
+
+		File file = new File(sbPath.toString());
+		try (FileWriter fileWrite = new FileWriter(sbPath.toString())) {
+			fileWrite.write(gson.toJson(mapWeight));
+			fileWrite.close();
+			// System.out.println("Successfully Copied JSON Object to File...");
+			System.out.println("\nJSON Object: " + gson.toJson(mapWeight));
+		}
+
+		sbPath.delete(sbPath.length() - lengthAg - jsonLength - 1, sbPath.length());
+
+		List<Donation> dons = null;
+		for (Entry<String, List<Donation>> entry : newDonors.entrySet()) {
+
+			sbPath.append(entry.getKey()).append(json);
+
+			File fileCat = new File(sbPath.toString());
+
+			if (fileCat.exists()) {
+				InputStream input = ApplicationController.class.getResourceAsStream(sbPath.toString());
+				jsonString = IOUtils.toString(input);
+				input.close();
+				// List<Student> participantJsonList = mapper.readValue(jsonString, new
+				// TypeReference<List<Student>>(){});
+				dons = new ObjectMapper().readValue(jsonString, new TypeReference<List<Donation>>() {
+				});
+				dons.addAll(entry.getValue());
+
+				try (FileWriter fileWrite = new FileWriter(sbPath.toString())) {
+					fileWrite.write(gson.toJson(dons));
+					fileWrite.close();
+					// System.out.println("Successfully Copied JSON Object to File...");
+					System.out.println("\nJSON Object: " + gson.toJson(dons));
 				}
-				
-				File file = new File(sbPath.toString());
-						try (FileWriter fileWrite = new FileWriter(sbPath.toString())) {
-							fileWrite.write(gson.toJson(mapWeight));
-							fileWrite.close();
-							// System.out.println("Successfully Copied JSON Object to File...");
-							System.out.println("\nJSON Object: " + gson.toJson(mapWeight));
-						}
-						
-						sbPath.delete(sbPath.length() - lengthAg - jsonLength - 1, sbPath.length());	
-						
-						List<Donation> dons = null;
-						for(Entry<String,List<Donation>> entry: newDonors.entrySet())
-						{
-							
-							sbPath.append(entry.getKey()).append(json);
-							
-							File fileCat = new File(sbPath.toString());
-							
-							if(fileCat.exists())
-							{
-								InputStream input =ApplicationController.class.getResourceAsStream(sbPath.toString());
-								jsonString = IOUtils.toString( input );
-								input.close();
-								//List<Student> participantJsonList = mapper.readValue(jsonString, new TypeReference<List<Student>>(){});
-								dons =new ObjectMapper().readValue(jsonString,new TypeReference<List<Donation>>(){});
-								dons.addAll(entry.getValue());
-								
-								try (FileWriter fileWrite = new FileWriter(sbPath.toString())) {
-									fileWrite.write(gson.toJson(dons));
-									fileWrite.close();
-									// System.out.println("Successfully Copied JSON Object to File...");
-									System.out.println("\nJSON Object: " + gson.toJson(dons));
-								}
-								
-								
-							}else {
-								try (FileWriter fileWrite = new FileWriter(sbPath.toString())) {
-									fileWrite.write(gson.toJson(entry.getValue()));
-									fileWrite.close();
-									// System.out.println("Successfully Copied JSON Object to File...");
-									System.out.println("\nJSON Object: " + gson.toJson(entry.getValue()));
-								}
-							}
-						}
-		
+
+			} else {
+				try (FileWriter fileWrite = new FileWriter(sbPath.toString())) {
+					fileWrite.write(gson.toJson(entry.getValue()));
+					fileWrite.close();
+					// System.out.println("Successfully Copied JSON Object to File...");
+					System.out.println("\nJSON Object: " + gson.toJson(entry.getValue()));
+				}
+			}
+		}
+
 	}
 
 

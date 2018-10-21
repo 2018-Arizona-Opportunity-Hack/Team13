@@ -7,7 +7,8 @@ public class AggregateResponse extends Response {
 
 	public AggregateResponse(int code, String msg, List<CategoryAggregate> aggregate) {
 		super(code, msg);
-		this.aggregate.addAll(aggregate);
+		if (null != aggregate)
+			this.aggregate.addAll(aggregate);
 	}
 
 	private static final long serialVersionUID = -7544705489718563388L;
