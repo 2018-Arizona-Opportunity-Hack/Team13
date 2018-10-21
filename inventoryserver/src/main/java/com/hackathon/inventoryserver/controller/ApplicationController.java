@@ -2,33 +2,33 @@ package com.hackathon.inventoryserver.controller;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-
 import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-
 import java.util.HashMap;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.apache.commons.io.IOUtils; 
-
-
 
 import org.apache.commons.collections.CollectionUtils;
-
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,19 +44,17 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.hackathon.inventoryserver.service.AggregationService;
 import com.hackathon.inventoryserver.service.FileStorageService;
 import com.opencsv.CSVReader;
 
 import models.AggregateResponse;
 import models.CategoryAggregate;
-
+import models.CategoryResponse;
 import models.Donation;
-import models.Donations;
-
 import models.MonthlyAggregateResponse;
 import models.Response;
 import models.YearlyResponse;
+import util.CategorySingleton;
 import util.Constant;
 import util.ExtractCSV;
 
@@ -66,9 +64,6 @@ public class ApplicationController {
 
 	@Autowired
 	private FileStorageService fileStorageService;
-
-	@Autowired
-	private AggregationService aggregationService;
 
 	@PostMapping("/csv/{year}/{month}")
 	public Response uploadFile(@RequestParam("file") MultipartFile file, @PathVariable("month") String month,
@@ -90,12 +85,158 @@ public class ApplicationController {
 		return new Response(200, "success");
 	}
 
-	@GetMapping("/csv/{year}/{month}")
-	public Response exportCsv(@RequestParam("file") MultipartFile file, @PathVariable("month") String month,
-			@PathVariable("year") String year) {
-		return new Response(200, "success");
+	   /*
+    Inventory January		lbs
+	 Grocery store		62,480.00
+	 Corp/Organization		3754.5
+	 Individual		2,545
+	 Church		603
+	 TEFAP		16,478
+	 Purchased		0
+	 Total		85,859.50
+	 Waste	minus	2858.5
+     Total		83,001.00
+    */
+	
+	@GetMapping("/export/{year}")
+	public void exportExcel(@PathVariable("year") String year) {
+		String[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+		Workbook workbook = new XSSFWorkbook();
+		List<String> totCol = new ArrayList<>();
+		Map<String, Double> totpounds = new HashMap<>();
+		for (String month : months) {
+			String[] columns = { "Inventory_" + month + "_" + year, "Pounds(lbs)" };
+			Sheet sheet = workbook.createSheet(month + "_" + year);
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 14);
+			headerFont.setColor(IndexedColors.BLACK.getIndex());
+			CellStyle headerCellStyle = workbook.createCellStyle();
+			headerCellStyle.setFont(headerFont);
+			Row headerRow = sheet.createRow(0);
+			for (int i = 0; i < columns.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(columns[i]);
+				cell.setCellStyle(headerCellStyle);
+			}
+
+			int rowNum = 1;
+
+			List<CategoryAggregate> categoiesJsonList = new ArrayList<>();
+			StringBuilder path = new StringBuilder().append(Constant.DATA_FOLDER + year + "/" + month)
+					.append("/aggregate.json");
+			try {
+				File f = new File(path.toString());
+				if (f.exists()) {
+					String content = new String(Files.readAllBytes(Paths.get(path.toString())));
+					System.out.println(content);
+					categoiesJsonList = new ObjectMapper().readValue(content,
+							new TypeReference<List<CategoryAggregate>>() {
+							});
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			Double total = 0.0;
+			for (CategoryAggregate cat : categoiesJsonList) {
+				if (!cat.getCategory().equalsIgnoreCase("Food Waste")) {
+					Row row = sheet.createRow(rowNum);
+					row.createCell(0).setCellValue(cat.getCategory());
+					row.createCell(1).setCellValue(cat.getTotalPounds());
+					totCol.add(rowNum - 1, cat.getCategory());
+					totpounds.putIfAbsent(cat.getCategory(), 0.0);
+					totpounds.put(cat.getCategory(), totpounds.get(cat.getCategory()) + cat.getTotalPounds());
+					rowNum++;
+					total += (cat.getTotalPounds() == null ? 0.0 : cat.getTotalPounds());
+				} else {
+					Row row = sheet.createRow(rowNum);
+					row.createCell(0).setCellValue(cat.getCategory());
+					row.createCell(1).setCellValue(-1 * cat.getTotalPounds());
+					total -= (cat.getTotalPounds() == null ? 0.0 : cat.getTotalPounds());
+					totCol.add(rowNum - 1, cat.getCategory());
+					totpounds.putIfAbsent(cat.getCategory(), 0.0);
+					totpounds.put(cat.getCategory(), totpounds.get(cat.getCategory()) - cat.getTotalPounds());
+					rowNum++;
+				}
+			}
+
+			Row row = sheet.createRow(rowNum++);
+			row.createCell(0).setCellValue("Total");
+			row.createCell(1).setCellValue(total);
+
+			/*
+			 * for (int i = 0; i < columns.length; i++) { sheet.autoSizeColumn(i); }
+			 */
+
+		}
+
+		// Annual excel Sheet
+		Sheet sheet = workbook.createSheet("Annual_" + year);
+		Font headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerFont.setFontHeightInPoints((short) 14);
+		headerFont.setColor(IndexedColors.BLACK.getIndex());
+		CellStyle headerCellStyle = workbook.createCellStyle();
+		headerCellStyle.setFont(headerFont);
+		Row headerRow = sheet.createRow(0);
+		String[] columns = { "Inventory_" + year, "Pounds(lbs)" };
+		for (int i = 0; i < columns.length; i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(columns[i]);
+			cell.setCellStyle(headerCellStyle);
+		}
+		Double total = 0.0;
+		int rowNum = 1;
+		for (String col : totCol) {
+			if (!col.equalsIgnoreCase("Food Waste")) {
+				Row row = sheet.createRow(rowNum);
+				row.createCell(0).setCellValue(col);
+				row.createCell(1).setCellValue(totpounds.get(col));
+				total += (totpounds.get(col));
+				rowNum++;
+			} else {
+				Row row = sheet.createRow(rowNum);
+				row.createCell(0).setCellValue(col);
+				row.createCell(1).setCellValue(-1 * totpounds.get(col));
+				total -= (totpounds.get(col));
+				rowNum++;
+			}
+		}
+
+		Row row = sheet.createRow(rowNum++);
+		row.createCell(0).setCellValue("Total");
+		row.createCell(1).setCellValue(total);
+
+		FileOutputStream fileOut;
+		try {
+			fileOut = new FileOutputStream("./Insights.xlsx");
+			workbook.write(fileOut);
+			fileOut.close();
+			workbook.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// return new Response(200, "success");
 	}
 
+	@GetMapping("/category")
+	public CategoryResponse getCategoryList() {
+		CategoryResponse response = new CategoryResponse(200, "success");
+		Map<String, String> map= CategorySingleton.getInstance();
+		Set<String> categoryList = new HashSet<>(); 
+		for(String val : map.keySet()) {
+			categoryList.add(val);
+		}
+		response.addCategoryList(categoryList);
+		return response;
+	}
+	
+	
 	@GetMapping("/data/{year}")
 	public YearlyResponse aggregateYearlyData(@PathVariable("year") String year,
 			@RequestParam(value = "categoryList", required = false) List<String> categoryList) {
